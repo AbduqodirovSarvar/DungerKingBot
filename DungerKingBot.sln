@@ -11,8 +11,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dunger.Application", "Dunge
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dunger.Infrastructure", "Dunger.Infrastructure\Dunger.Infrastructure.csproj", "{3F2B85FE-C39A-4400-A2CB-4BB554058A95}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{F8C9A177-484D-406C-B3E5-1CA23C00BA4E}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,10 +33,6 @@ Global
 		{3F2B85FE-C39A-4400-A2CB-4BB554058A95}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3F2B85FE-C39A-4400-A2CB-4BB554058A95}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3F2B85FE-C39A-4400-A2CB-4BB554058A95}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F8C9A177-484D-406C-B3E5-1CA23C00BA4E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F8C9A177-484D-406C-B3E5-1CA23C00BA4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F8C9A177-484D-406C-B3E5-1CA23C00BA4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F8C9A177-484D-406C-B3E5-1CA23C00BA4E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
