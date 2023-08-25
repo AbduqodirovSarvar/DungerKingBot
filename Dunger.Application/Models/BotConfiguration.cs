@@ -8,8 +8,8 @@ namespace Dunger.Application.Models
 {
     public class BotConfiguration
     {
-        public string Token { get; set; }
-        public string HostAddress { get; set; }
-        public string UserIds { get; set; }
+        public string Token { get; set; } = string.Empty;
+        public string HostAddress { get; set; } = string.Empty;
+        public string UserIds { get; set; } = string.Empty;
     }
 }

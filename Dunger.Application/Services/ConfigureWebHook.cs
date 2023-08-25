@@ -3,7 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,19 +18,19 @@ namespace Dunger.Application.Services
     {
         private readonly ILogger _logger;
         private readonly IServiceProvider _serviceProvider;
-        private readonly IConfiguration _configuration;
-        public ConfigureWebHook(ILogger<ConfigureWebHook> logger, IServiceProvider serviceProvider, IConfiguration configuration) 
+        private readonly BotConfiguration _botConfig;
+        public ConfigureWebHook(ILogger<ConfigureWebHook> logger, IServiceProvider serviceProvider, IOptions<BotConfiguration> configuration) 
         {
             _logger = logger;
             _serviceProvider = serviceProvider;
-            _configuration = configuration;
+            _botConfig = configuration.Value;
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
             using var scope = _serviceProvider.CreateScope();
             var botclient = scope.ServiceProvider.GetRequiredService<ITelegramBotClient>();
-            var webhookAddress = $@"{_configuration.GetSection("BotConfig:HostAddress").Value}/bot/{_configuration.GetSection("BotConfig:Token").Value}";
+            var webhookAddress = $@"{_botConfig.HostAddress}/bot/{_botConfig.Token}";
             _logger.LogInformation("Setting web hook");
 
             await botclient.SetWebhookAsync(
@@ -38,7 +38,7 @@ namespace Dunger.Application.Services
                 allowedUpdates: Array.Empty<UpdateType>(),
                 cancellationToken: cancellationToken);
 
-            await botclient.SendTextMessageAsync(chatId: 636809820, text: "Bot ishladi");
+            await botclient.SendTextMessageAsync(chatId: 636809820, text: "Bot ishladi", cancellationToken: cancellationToken);
         }
 
         public Task StopAsync(CancellationToken cancellationToken)

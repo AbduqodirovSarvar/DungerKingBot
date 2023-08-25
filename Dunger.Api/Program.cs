@@ -1,11 +1,18 @@
 using Dunger.Application;
+using Dunger.Application.Models;
+using Microsoft.Extensions.Configuration;
+using Telegram.Bot;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.ApplicationServices(builder.Configuration);
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddControllers();//.AddNewtonsoftJson();
+
+builder.Services.Configure<BotConfiguration>(builder.Configuration.GetSection("BotConfig"));
+
+builder.Services.AddHttpClient("tgwebhook").AddTypedClient<ITelegramBotClient>(client =>
+                new TelegramBotClient(builder.Configuration.GetSection("BotConfig:Token").Value, client));
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -16,10 +23,8 @@ app.UseCors(options =>
     options.AllowAnyOrigin()
         .AllowAnyMethod()
         .AllowAnyHeader();
-    // or configure specific origins, methods, and headers
 });
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -32,14 +37,12 @@ app.UseEndpoints(endpoints =>
     var token = builder.Configuration.GetSection("BotConfig:Token").Value;
     endpoints.MapControllerRoute(name: "tgwebhook",
         pattern: $"bot/{token}",
-        new { controller = "Bot", action = "Post" });
+        new { controller = "WebHook", action = "Post" });
 
     endpoints.MapControllers();
 });
 
 app.UseHttpsRedirection();
-
-app.UseAuthorization();
 
 app.MapControllers();
 
