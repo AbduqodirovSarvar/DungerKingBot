@@ -12,14 +12,14 @@ using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types.Enums;
 
-namespace Dunger.Application.Services
+namespace Dunger.Application.Services.TelegramBotServices
 {
     public class ConfigureWebHook : IHostedService
     {
         private readonly ILogger _logger;
         private readonly IServiceProvider _serviceProvider;
         private readonly BotConfiguration _botConfig;
-        public ConfigureWebHook(ILogger<ConfigureWebHook> logger, IServiceProvider serviceProvider, IOptions<BotConfiguration> configuration) 
+        public ConfigureWebHook(ILogger<ConfigureWebHook> logger, IServiceProvider serviceProvider, IOptions<BotConfiguration> configuration)
         {
             _logger = logger;
             _serviceProvider = serviceProvider;
@@ -30,20 +30,25 @@ namespace Dunger.Application.Services
         {
             using var scope = _serviceProvider.CreateScope();
             var botclient = scope.ServiceProvider.GetRequiredService<ITelegramBotClient>();
-            var webhookAddress = $@"{_botConfig.HostAddress}/bot/{_botConfig.Token}";
-            _logger.LogInformation("Setting web hook");
+            var webhookAddress = $"{_botConfig.HostAddress}{_botConfig.Route}";
 
+            _logger.LogInformation("Setting webhook: {WebhookAddress}", webhookAddress);
             await botclient.SetWebhookAsync(
                 url: webhookAddress,
                 allowedUpdates: Array.Empty<UpdateType>(),
+                secretToken: _botConfig.SecretKey,
                 cancellationToken: cancellationToken);
 
             await botclient.SendTextMessageAsync(chatId: 636809820, text: "Bot ishladi", cancellationToken: cancellationToken);
         }
 
-        public Task StopAsync(CancellationToken cancellationToken)
+        public async Task StopAsync(CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            using var scope = _serviceProvider.CreateScope();
+            var botClient = scope.ServiceProvider.GetRequiredService<ITelegramBotClient>();
+
+            _logger.LogInformation("Removing webhook");
+            await botClient.DeleteWebhookAsync(cancellationToken: cancellationToken);
         }
     }
 }

@@ -1,6 +1,7 @@
-﻿using Dunger.Application.Services;
+﻿using Dunger.Application.Services.TelegramBotServices;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 
 namespace Dunger.Api.Controllers
@@ -9,12 +10,10 @@ namespace Dunger.Api.Controllers
     [ApiController]
     public class BotController : ControllerBase
     {
-        public BotController() { }
         [HttpPost]
-        public async Task<IActionResult> Post([FromServices] UpdateHandlerService service, [FromBody] Update update)
+        public async Task<IActionResult> Post([FromBody] Update update, [FromServices] UpdateHandlerService handleUpdateService, CancellationToken cancellationToken)
         {
-            await service.EchoAsync(update);
-
+            await handleUpdateService.HandleUpdateAsync(update, cancellationToken);
             return Ok();
         }
     }
