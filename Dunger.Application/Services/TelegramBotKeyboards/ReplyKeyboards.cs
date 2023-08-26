@@ -10,41 +10,77 @@ namespace Dunger.Application.Services.TelegramBotKeyboards
         {
             _context = context;
         }
-        public ReplyKeyboardMarkup BotOnReceivedStart()
+        public static ReplyKeyboardMarkup BotOnReceivedStart
         {
-            ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup(
-                new[]
-                {
+            get
+            {
+                ReplyKeyboardMarkup keyboardMarkup = new(
+                    new[]
+                    {
                     new[] {new KeyboardButton("Menu"), new KeyboardButton("My Orders")},
                     new[] {new KeyboardButton("Ma'lumot"), new KeyboardButton("Fikr-Mulohozalar")},
                     new[] {new KeyboardButton("Aloqa"), new KeyboardButton("Sozlamalar")}
-                });
+                    })
+                {
+                    ResizeKeyboard = true
+                };
 
-            keyboardMarkup.ResizeKeyboard = true;
-
-            return keyboardMarkup;
+                return keyboardMarkup;
+            }
         }
 
-        public ReplyKeyboardMarkup LanguageKeyboard()
+        public ReplyKeyboardMarkup LanguageKeyboard
         {
-            List<KeyboardButton[]> buttonRows = new List<KeyboardButton[]>();
-            var languages = _context.Languages.ToList();
-            List<KeyboardButton> buttons = new List<KeyboardButton>();
-            foreach (var language in languages)
+            get
             {
-                if (buttons.Count == 2)
+                /*List<KeyboardButton[]> buttonRows = new();
+                var languages = _context.Languages.ToList();
+                List<KeyboardButton> buttons = new();
+                foreach (var language in languages)
                 {
-                    buttonRows.Add(buttons.ToArray());
-                    buttons = new List<KeyboardButton>();
-                    continue;
+                    if (buttons.Count == 2)
+                    {
+                        buttonRows.Add(buttons.ToArray());
+                        buttons = new List<KeyboardButton>();
+                        continue;
+                    }
+
+                    buttons.Add(new KeyboardButton(language.Name.ToString()));
                 }
 
-                buttons.Add(new KeyboardButton(language.Name.ToString()));
+                ReplyKeyboardMarkup keyboardMarkup = new(buttons.ToArray())
+                {
+                    ResizeKeyboard = true
+                };
+
+                return keyboardMarkup;*/
+
+                List<KeyboardButton[]> buttonRows = new List<KeyboardButton[]>();
+                var languages = _context.Languages.ToList();
+                List<KeyboardButton> buttons = new List<KeyboardButton>();
+                foreach (var language in languages)
+                {
+                    if (buttons.Count == 2)
+                    {
+                        buttonRows.Add(buttons.ToArray());
+                        buttons.Clear();
+                    }
+
+                    buttons.Add(new KeyboardButton(language.Name.ToString()));
+                }
+
+                if (buttons.Count > 0)
+                {
+                    buttonRows.Add(buttons.ToArray());
+                }
+
+                ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup(buttonRows.ToArray())
+                {
+                    ResizeKeyboard = true
+                };
+
+                return keyboardMarkup;
             }
-
-            ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup(buttons.ToArray());
-
-            return keyboardMarkup;
         }
     }
 }

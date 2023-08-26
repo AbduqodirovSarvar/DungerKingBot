@@ -1,6 +1,8 @@
 ﻿using Dunger.Application.Abstractions;
+using Dunger.Application.EntityTypeConfiguration;
 using Dunger.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection;
 
 namespace Dunger.Infrastructure.DbContexts
 {
@@ -22,7 +24,16 @@ namespace Dunger.Infrastructure.DbContexts
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
+
+            modelBuilder.ApplyConfiguration(new UserTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new OrderTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new MenuTypaConfiguration());
+            modelBuilder.ApplyConfiguration(new LanguageTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new FilialTypeConfiguration());
+        }
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.EnableSensitiveDataLogging(false);
         }
     }
 }

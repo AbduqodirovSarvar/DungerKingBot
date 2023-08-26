@@ -23,47 +23,50 @@ namespace Dunger.Application.Services.TelegramBotServices
             _context = context;
             _state = state;
         }
-        public static Domain.Entities.User? user { get; set; }
+        public static Domain.Entities.User? UserObject { get; set; }
         public async Task CatchMessage(ITelegramBotClient botClient, Message message, CancellationToken cancellationToken)
         {
             var state = await _redis.GetUserState(message.Chat.Id);
-            if (state == null && user == null)
+            if (state == null || UserObject == null)
             {
                 await botClient.SendTextMessageAsync(chatId: message.Chat.Id,
                     text: $"Tilni tanglang!\nChoose language!\nВыберите язык!",
-                    replyMarkup: _keyboards.LanguageKeyboard(),
+                    replyMarkup: _keyboards.LanguageKeyboard,
                     cancellationToken: cancellationToken);
 
                 await _redis.SetUserState(message.Chat.Id, RegisterState.States[0]);
 
-                user = new Domain.Entities.User();
-                user.UserName = message.Chat.Username;
-                user.TelegramId = message.Chat.Id;
+                UserObject = new Domain.Entities.User
+                {
+                    UserName = message.Chat.Username,
+                    TelegramId = message.Chat.Id
+                };
 
-                await SendLanguage(botClient, user, message, cancellationToken);
+                //await SendLanguage(botClient, UserObject, message, cancellationToken);
+                return;
             }
 
-            else if (state == RegisterState.States[0] && user != null)
+            else if (state == RegisterState.States[0] && UserObject != null)
             {
-                await SendFirstName(botClient, user, message, cancellationToken);
+               // await SendFirstName(botClient, UserObject, message, cancellationToken);
             }
-            else if (state == RegisterState.States[1] && user != null)
+            else if (state == RegisterState.States[1] && UserObject != null)
             {
-                await SendLastName(botClient, user, message, cancellationToken);
+               // await SendLastName(botClient, UserObject, message, cancellationToken);
             }
-            else if (state == RegisterState.States[2] && user != null)
+            else if (state == RegisterState.States[2] && UserObject != null)
             {
-                await SendContact(botClient, user, message, cancellationToken);
+              //  await SendContact(botClient, UserObject, message, cancellationToken);
             }
         }
 
         public async Task SendContact(ITelegramBotClient botClient, Domain.Entities.User user, Message message, CancellationToken cancellationToken)
         {
-            if (message.Text == null)
+            if(message.Contact?.PhoneNumber == null)
             {
                 return;
             }
-            user.Phone = message.Contact?.PhoneNumber ?? $"Empty";
+            user.Phone = message.Contact.PhoneNumber;
             string msg = user.LanguageId switch
             {
                 1 => "Tabriklaymiz!\nSiz r'yhatdan muvaffaqiyatli o'tdingiz!\nKerakli bo'limni tanlang!",
@@ -74,6 +77,7 @@ namespace Dunger.Application.Services.TelegramBotServices
 
             await botClient.SendTextMessageAsync(chatId: message.Chat.Id,
                     text: msg,
+                    replyMarkup: ReplyKeyboards.BotOnReceivedStart,
                     cancellationToken: cancellationToken);
 
             await _state.Finished(message.Chat.Id);
@@ -81,7 +85,9 @@ namespace Dunger.Application.Services.TelegramBotServices
             await _context.Users.AddAsync(user, cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);
 
-            user = null!;
+            UserObject = null;
+
+            return;
         }
 
         public async Task SendFirstName(ITelegramBotClient botClient, Domain.Entities.User user, Message message, CancellationToken cancellationToken)
@@ -104,6 +110,8 @@ namespace Dunger.Application.Services.TelegramBotServices
                     cancellationToken: cancellationToken);
 
             await _state.Next(message.Chat.Id);
+
+            return;
         }
 
         public async Task SendLastName(ITelegramBotClient botClient, Domain.Entities.User user, Message message, CancellationToken cancellationToken)
@@ -125,12 +133,23 @@ namespace Dunger.Application.Services.TelegramBotServices
                 _ => "Kontaktni ulashish"
             };
 
+            ReplyKeyboardMarkup replyKeyboard = new ReplyKeyboardMarkup(
+                new[]
+                {
+                    new KeyboardButton[] { new KeyboardButton(replyMarkupText)
+                    { RequestContact = true } }
+                });
+
+            replyKeyboard.ResizeKeyboard = true;
+
             await botClient.SendTextMessageAsync(chatId: message.Chat.Id,
                     text: msg,
-                    replyMarkup: new ReplyKeyboardMarkup(new[] { new KeyboardButton[] { new KeyboardButton(replyMarkupText) { RequestContact = true } } }),
+                    replyMarkup: replyKeyboard,
                     cancellationToken: cancellationToken);
 
             await _state.Next(message.Chat.Id);
+
+            return;
         }
 
         public async Task SendLanguage(ITelegramBotClient botClient, Domain.Entities.User user, Message message, CancellationToken cancellationToken)
@@ -156,6 +175,8 @@ namespace Dunger.Application.Services.TelegramBotServices
                     replyMarkup: new ReplyKeyboardRemove(),
                     cancellationToken: cancellationToken);
             await _state.Next(message.Chat.Id);
+
+            return;
         }
     }
 }

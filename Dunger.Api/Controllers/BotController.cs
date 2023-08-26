@@ -11,8 +11,15 @@ namespace Dunger.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] Update update, [FromServices] UpdateHandlerService handleUpdateService, CancellationToken cancellationToken)
         {
-            await handleUpdateService.HandleUpdateAsync(update, cancellationToken);
-            return Ok();
+            try
+            {
+                await handleUpdateService.HandleUpdateAsync(update, cancellationToken);
+                return Ok();
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

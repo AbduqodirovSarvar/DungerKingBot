@@ -7,7 +7,6 @@ using Telegram.Bot;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.BotServices(builder.Configuration);
-builder.Services.ApplicationServices(builder.Configuration);
 builder.Services.InfrastructureServices(builder.Configuration);
 
 builder.Services.AddControllers().AddNewtonsoftJson();

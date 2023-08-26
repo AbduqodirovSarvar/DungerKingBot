@@ -1,7 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
+
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
 
 namespace Dunger.Infrastructure.Migrations
 {
@@ -53,13 +56,13 @@ namespace Dunger.Infrastructure.Migrations
                 name: "Users",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
+                    TelegramId = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table.Column<int>(type: "integer", nullable: false),
                     FirstName = table.Column<string>(type: "text", nullable: false),
                     LastName = table.Column<string>(type: "text", nullable: false),
                     UserName = table.Column<string>(type: "text", nullable: true),
                     Phone = table.Column<string>(type: "text", nullable: false),
-                    TelegramId = table.Column<long>(type: "bigint", nullable: false),
                     LanguageId = table.Column<int>(type: "integer", nullable: false),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
                     CreatedTate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
@@ -67,7 +70,7 @@ namespace Dunger.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Users", x => x.Id);
+                    table.PrimaryKey("PK_Users", x => x.TelegramId);
                     table.ForeignKey(
                         name: "FK_Users_Languages_LanguageId",
                         column: x => x.LanguageId,
@@ -112,7 +115,7 @@ namespace Dunger.Infrastructure.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     TelegramId = table.Column<long>(type: "bigint", nullable: false),
-                    UserId = table.Column<int>(type: "integer", nullable: true),
+                    UserTelegramId = table.Column<long>(type: "bigint", nullable: true),
                     IsUnBlocked = table.Column<bool>(type: "boolean", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
@@ -120,10 +123,10 @@ namespace Dunger.Infrastructure.Migrations
                 {
                     table.PrimaryKey("PK_BlockedUsers", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_BlockedUsers_Users_UserId",
-                        column: x => x.UserId,
+                        name: "FK_BlockedUsers_Users_UserTelegramId",
+                        column: x => x.UserTelegramId,
                         principalTable: "Users",
-                        principalColumn: "Id");
+                        principalColumn: "TelegramId");
                 });
 
             migrationBuilder.CreateTable(
@@ -133,7 +136,6 @@ namespace Dunger.Infrastructure.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     TelegramId = table.Column<long>(type: "bigint", nullable: false),
-                    UserId = table.Column<int>(type: "integer", nullable: true),
                     Message = table.Column<string>(type: "text", nullable: false),
                     CreatedTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
@@ -141,10 +143,11 @@ namespace Dunger.Infrastructure.Migrations
                 {
                     table.PrimaryKey("PK_Comments", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Comments_Users_UserId",
-                        column: x => x.UserId,
+                        name: "FK_Comments_Users_TelegramId",
+                        column: x => x.TelegramId,
                         principalTable: "Users",
-                        principalColumn: "Id");
+                        principalColumn: "TelegramId",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -154,7 +157,6 @@ namespace Dunger.Infrastructure.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     TelegramId = table.Column<long>(type: "bigint", nullable: false),
-                    UserId = table.Column<int>(type: "integer", nullable: true),
                     IsPaid = table.Column<bool>(type: "boolean", nullable: false),
                     IsDone = table.Column<bool>(type: "boolean", nullable: false),
                     Address = table.Column<string>(type: "text", nullable: false),
@@ -183,10 +185,11 @@ namespace Dunger.Infrastructure.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Orders_Users_UserId",
-                        column: x => x.UserId,
+                        name: "FK_Orders_Users_TelegramId",
+                        column: x => x.TelegramId,
                         principalTable: "Users",
-                        principalColumn: "Id");
+                        principalColumn: "TelegramId",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -258,20 +261,41 @@ namespace Dunger.Infrastructure.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateIndex(
-                name: "IX_BlockedUsers_UserId",
-                table: "BlockedUsers",
-                column: "UserId");
+            migrationBuilder.InsertData(
+                table: "Languages",
+                columns: new[] { "Id", "CreatedTime", "Name" },
+                values: new object[,]
+                {
+                    { 1, new DateTime(2023, 8, 27, 2, 43, 22, 907, DateTimeKind.Utc).AddTicks(5040), "uz" },
+                    { 2, new DateTime(2023, 8, 27, 2, 43, 22, 907, DateTimeKind.Utc).AddTicks(5042), "en" },
+                    { 3, new DateTime(2023, 8, 27, 2, 43, 22, 907, DateTimeKind.Utc).AddTicks(5043), "ru" }
+                });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Comments_UserId",
+                name: "IX_BlockedUsers_UserTelegramId",
+                table: "BlockedUsers",
+                column: "UserTelegramId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Comments_TelegramId",
                 table: "Comments",
-                column: "UserId");
+                column: "TelegramId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Filials_LanguageId",
                 table: "Filials",
                 column: "LanguageId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Filials_Name",
+                table: "Filials",
+                column: "Name");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Languages_Name",
+                table: "Languages",
+                column: "Name",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_MenuPhotos_MenuId",
@@ -299,9 +323,9 @@ namespace Dunger.Infrastructure.Migrations
                 column: "LanguageId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Orders_UserId",
+                name: "IX_Orders_TelegramId",
                 table: "Orders",
-                column: "UserId");
+                column: "TelegramId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_OrdersMenus_MenuId",
@@ -322,6 +346,12 @@ namespace Dunger.Infrastructure.Migrations
                 name: "IX_Users_LanguageId",
                 table: "Users",
                 column: "LanguageId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_Phone",
+                table: "Users",
+                column: "Phone",
+                unique: true);
         }
 
         /// <inheritdoc />

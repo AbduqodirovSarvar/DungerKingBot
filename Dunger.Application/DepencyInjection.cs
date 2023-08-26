@@ -10,11 +10,6 @@ namespace Dunger.Application
 {
     public static class DepencyInjection
     {
-        public static IServiceCollection ApplicationServices(this IServiceCollection _services, IConfiguration _configuration)
-        {
-            return _services;
-        }
-
         public static IServiceCollection BotServices(this IServiceCollection _services, IConfiguration _configuration)
         {
             _services.AddHostedService<ConfigureWebHook>();
@@ -25,9 +20,19 @@ namespace Dunger.Application
             _services.AddScoped<ReplyKeyboards>();
             _services.AddScoped<IRegisterService, RegisterService>();
             _services.AddScoped<RegisterState>();
+            _services.AddScoped<ISendMessageService, SendMessageService>();
 
-            _services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(_configuration.GetSection(Redis.Configuration).Value));
-            _services.AddSingleton<IDatabase>(provider => provider.GetRequiredService<IConnectionMultiplexer>().GetDatabase());
+            _services.AddSingleton<IConnectionMultiplexer>(provider =>
+            {
+                var configuration = ConfigurationOptions.Parse(_configuration.GetSection(Redis.Configuration).Value);
+                return ConnectionMultiplexer.Connect(configuration);
+            });
+
+            _services.AddSingleton<IDatabase>(provider =>
+            {
+                var connectionMultiplexer = provider.GetRequiredService<IConnectionMultiplexer>();
+                return connectionMultiplexer.GetDatabase();
+            });
             return _services;
         }
     }

@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Dunger.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230826162723_Initial")]
+    [Migration("20230826214323_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -42,12 +42,12 @@ namespace Dunger.Infrastructure.Migrations
                     b.Property<long>("TelegramId")
                         .HasColumnType("bigint");
 
-                    b.Property<int?>("UserId")
-                        .HasColumnType("integer");
+                    b.Property<long?>("UserTelegramId")
+                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserTelegramId");
 
                     b.ToTable("BlockedUsers");
                 });
@@ -70,12 +70,9 @@ namespace Dunger.Infrastructure.Migrations
                     b.Property<long>("TelegramId")
                         .HasColumnType("bigint");
 
-                    b.Property<int?>("UserId")
-                        .HasColumnType("integer");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("TelegramId");
 
                     b.ToTable("Comments");
                 });
@@ -114,6 +111,8 @@ namespace Dunger.Infrastructure.Migrations
 
                     b.HasIndex("LanguageId");
 
+                    b.HasIndex("Name");
+
                     b.ToTable("Filials");
                 });
 
@@ -134,7 +133,30 @@ namespace Dunger.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Name")
+                        .IsUnique();
+
                     b.ToTable("Languages");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedTime = new DateTime(2023, 8, 27, 2, 43, 22, 907, DateTimeKind.Utc).AddTicks(5040),
+                            Name = "uz"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreatedTime = new DateTime(2023, 8, 27, 2, 43, 22, 907, DateTimeKind.Utc).AddTicks(5042),
+                            Name = "en"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CreatedTime = new DateTime(2023, 8, 27, 2, 43, 22, 907, DateTimeKind.Utc).AddTicks(5043),
+                            Name = "ru"
+                        });
                 });
 
             modelBuilder.Entity("Dunger.Domain.Entities.Menu", b =>
@@ -242,16 +264,13 @@ namespace Dunger.Infrastructure.Migrations
                     b.Property<decimal>("TotalSumms")
                         .HasColumnType("numeric");
 
-                    b.Property<int?>("UserId")
-                        .HasColumnType("integer");
-
                     b.HasKey("Id");
 
                     b.HasIndex("FilialId");
 
                     b.HasIndex("LanguageId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("TelegramId");
 
                     b.ToTable("Orders");
                 });
@@ -308,11 +327,11 @@ namespace Dunger.Infrastructure.Migrations
 
             modelBuilder.Entity("Dunger.Domain.Entities.User", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("TelegramId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("bigint");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("TelegramId"));
 
                     b.Property<DateTime>("CreatedTate")
                         .HasColumnType("timestamp with time zone");
@@ -323,6 +342,9 @@ namespace Dunger.Infrastructure.Migrations
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<int>("Id")
+                        .HasColumnType("integer");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
@@ -338,15 +360,15 @@ namespace Dunger.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<long>("TelegramId")
-                        .HasColumnType("bigint");
-
                     b.Property<string>("UserName")
                         .HasColumnType("text");
 
-                    b.HasKey("Id");
+                    b.HasKey("TelegramId");
 
                     b.HasIndex("LanguageId");
+
+                    b.HasIndex("Phone")
+                        .IsUnique();
 
                     b.ToTable("Users");
                 });
@@ -355,7 +377,7 @@ namespace Dunger.Infrastructure.Migrations
                 {
                     b.HasOne("Dunger.Domain.Entities.User", "User")
                         .WithMany()
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserTelegramId");
 
                     b.Navigation("User");
                 });
@@ -364,7 +386,9 @@ namespace Dunger.Infrastructure.Migrations
                 {
                     b.HasOne("Dunger.Domain.Entities.User", "User")
                         .WithMany("Comments")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("TelegramId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("User");
                 });
@@ -426,7 +450,9 @@ namespace Dunger.Infrastructure.Migrations
 
                     b.HasOne("Dunger.Domain.Entities.User", "User")
                         .WithMany("Orders")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("TelegramId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Filial");
 

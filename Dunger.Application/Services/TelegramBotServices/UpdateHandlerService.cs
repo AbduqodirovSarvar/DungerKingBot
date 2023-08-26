@@ -36,20 +36,25 @@ namespace Dunger.Application.Services.TelegramBotServices
 
         private async Task BotOnMessageReceived(Message message, CancellationToken cancellationToken)
         {
-            string? state = await _redis.GetUserState(message.Chat.Id);
-
-            var action = message.Text switch
+            string? msg = message?.Text;
+            string? state = await _redis.GetUserState(message!.Chat.Id);
+            var action = msg switch
             {
                 "/start" => _rms.SendStartCommand(_botclient, message, cancellationToken),
                 "/help" => _rms.SendHelpCommand(_botclient, message, cancellationToken),
                 _ when state != null => _rms.Usage(_botclient, state, message, cancellationToken),
-                _ => UnknownCommand()
+                _ => UnknownCommand(_botclient, message, cancellationToken),
             };
+
+            await action;
+
+            return;
         }
 
-        private Task UnknownCommand()
+        private static Task UnknownCommand(ITelegramBotClient client, Message message, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            Console.WriteLine($"message keldi: {message.Text}");
+            return Task.CompletedTask;
         }
 
         private async Task BotOnCallbackQueryReceived(CallbackQuery callbackQuery, CancellationToken cancellationToken)
@@ -65,6 +70,8 @@ namespace Dunger.Application.Services.TelegramBotServices
                 chatId: callbackQuery.Message!.Chat.Id,
                 text: $"Received {callbackQuery.Data}",
                 cancellationToken: cancellationToken);
+
+            return;
         }
 
         private Task BotOnChosenInlineResultReceived(ChosenInlineResult chosenInlineResult, CancellationToken cancellationToken)
