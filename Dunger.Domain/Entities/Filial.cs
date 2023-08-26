@@ -11,6 +11,6 @@
         public Language? Language { get; set; }
         public ICollection<Order> Orders { get; set; } = new HashSet<Order>();
         public ICollection<Menu> Menus { get; set; } = new HashSet<Menu>();
-        public DateTime CreatedTime { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedTime { get; set; } = DateTime.SpecifyKind(DateTimeOffset.UtcNow.ToOffset(TimeSpan.FromHours(5)).DateTime, DateTimeKind.Utc).ToUniversalTime();
     }
 }

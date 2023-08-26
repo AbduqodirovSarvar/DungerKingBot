@@ -8,10 +8,10 @@ namespace Dunger.Application.EntityTypeConfiguration
     {
         public void Configure(EntityTypeBuilder<User> builder)
         {
-            builder.HasMany(x => x.Comments).WithOne(x => x.User).HasForeignKey(x => x.UserId);
-            builder.HasIndex(x => x.TelegramId).IsUnique();
+            builder.HasMany(x => x.Comments).WithOne(x => x.User).HasForeignKey(x => x.TelegramId);
+            builder.HasKey(x => x.TelegramId);
             builder.HasIndex(x => x.Phone).IsUnique();
-            builder.HasMany(x => x.Orders).WithOne(x => x.User).HasForeignKey(x => x.UserId);
+            builder.HasMany(x => x.Orders).WithOne(x => x.User).HasForeignKey(x => x.TelegramId);
         }
     }
 }

@@ -1,14 +1,14 @@
 using Dunger.Api.Controllers;
 using Dunger.Application;
 using Dunger.Application.Models;
-using Dunger.Application.Services.TelegramBotServices;
-using Microsoft.AspNetCore.Routing;
+using Dunger.Infrastructure;
 using Telegram.Bot;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.BotServices(builder.Configuration);
 builder.Services.ApplicationServices(builder.Configuration);
+builder.Services.InfrastructureServices(builder.Configuration);
 
 builder.Services.AddControllers().AddNewtonsoftJson();
 
@@ -46,9 +46,11 @@ app.UseEndpoints(endpoints =>
     var controllerName = typeof(BotController).Name.Replace("Controller", "", StringComparison.Ordinal);
     var actionName = typeof(BotController).GetMethods()[0].Name;
 
+    string? pattern = builder.Configuration.GetSection(BotConfiguration.RouteSection).Value;
+
     endpoints.MapControllerRoute(
             name: "bot_webhook",
-            pattern: builder.Configuration.GetSection(BotConfiguration.RouteSection).Value,
+            pattern: pattern ?? "/api/bot",
             defaults: new { controller = controllerName, action = actionName });
 
     endpoints.MapControllers();

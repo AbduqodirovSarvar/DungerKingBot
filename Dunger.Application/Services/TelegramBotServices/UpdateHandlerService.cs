@@ -1,14 +1,7 @@
-﻿using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Dunger.Application.Abstractions.TelegramBotAbstractions;
+using Microsoft.Extensions.Logging;
 using Telegram.Bot;
 using Telegram.Bot.Types;
-using Telegram.Bot.Types.Enums;
-using Dunger.Application.Services.TelegramBotServices;
-using Dunger.Application.Abstractions;
 
 namespace Dunger.Application.Services.TelegramBotServices
 {
@@ -17,11 +10,13 @@ namespace Dunger.Application.Services.TelegramBotServices
         private readonly ILogger<UpdateHandlerService> _logger;
         private readonly ITelegramBotClient _botclient;
         private readonly IReceivedMessageService _rms;
-        public UpdateHandlerService(ILogger<UpdateHandlerService> logger, ITelegramBotClient client, IReceivedMessageService receivedMessageService)
+        private readonly Redis _redis;
+        public UpdateHandlerService(ILogger<UpdateHandlerService> logger, ITelegramBotClient client, IReceivedMessageService receivedMessageService, Redis redis)
         {
             _logger = logger;
             _botclient = client;
             _rms = receivedMessageService;
+            _redis = redis;
         }
 
         public async Task HandleUpdateAsync(Update update, CancellationToken cancellationToken)
@@ -41,18 +36,20 @@ namespace Dunger.Application.Services.TelegramBotServices
 
         private async Task BotOnMessageReceived(Message message, CancellationToken cancellationToken)
         {
-            _logger.LogInformation("Receive message type: {MessageType}", message.Type);
-            if (message.Text is not { } messageText)
-                return;
+            string? state = await _redis.GetUserState(message.Chat.Id);
 
-            var action = messageText.Split(' ')[0] switch
+            var action = message.Text switch
             {
                 "/start" => _rms.SendStartCommand(_botclient, message, cancellationToken),
                 "/help" => _rms.SendHelpCommand(_botclient, message, cancellationToken),
-                _ => _rms.Usage(_botclient, message, cancellationToken)
+                _ when state != null => _rms.Usage(_botclient, state, message, cancellationToken),
+                _ => UnknownCommand()
             };
-            Message sentMessage = await action;
-            _logger.LogInformation("The message was sent with id: {SentMessageId}", sentMessage.MessageId);
+        }
+
+        private Task UnknownCommand()
+        {
+            throw new NotImplementedException();
         }
 
         private async Task BotOnCallbackQueryReceived(CallbackQuery callbackQuery, CancellationToken cancellationToken)

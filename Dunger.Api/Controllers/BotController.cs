@@ -1,7 +1,5 @@
 ﻿using Dunger.Application.Services.TelegramBotServices;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 
 namespace Dunger.Api.Controllers
