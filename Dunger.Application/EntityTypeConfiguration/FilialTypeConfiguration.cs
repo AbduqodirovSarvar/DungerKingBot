@@ -8,7 +8,7 @@ namespace Dunger.Application.EntityTypeConfiguration
     {
         public void Configure(EntityTypeBuilder<Filial> builder)
         {
-            builder.HasIndex(x => x.Name);
+            builder.HasIndex(x => x.Name).IsUnique();
         }
     }
 }

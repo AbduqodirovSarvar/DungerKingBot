@@ -21,6 +21,8 @@ namespace Dunger.Application
             _services.AddScoped<IRegisterService, RegisterService>();
             _services.AddScoped<RegisterState>();
             _services.AddScoped<ISendMessageService, SendMessageService>();
+            _services.AddScoped<IOrderServices, OrderServices>();
+            _services.AddScoped<IFeedBackServices, FeedBackServices>();
 
             _services.AddSingleton<IConnectionMultiplexer>(provider =>
             {
