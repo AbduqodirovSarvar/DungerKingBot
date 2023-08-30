@@ -1,6 +1,7 @@
 ﻿using Dunger.Application.Abstractions;
 using Dunger.Application.Abstractions.TelegramBotAbstractions;
 using Dunger.Application.Services.TelegramBotMessages;
+using Dunger.Application.Services.TelegramBotStates;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Telegram.Bot;
@@ -11,16 +12,16 @@ namespace Dunger.Application.Services.TelegramBotServices
     public class UpdateHandlerService
     {
         private readonly ILogger<UpdateHandlerService> _logger;
-        private readonly ITelegramBotClient _botclient;
-        private readonly IReceivedMessageService _rms;
+        private readonly IReceivedMessageService _receivedMessageService;
         private readonly Redis _redis;
-        public UpdateHandlerService(ILogger<UpdateHandlerService> logger, ITelegramBotClient client,
+        private readonly IReceivedCallbackQueryServices _queryServices;
+        public UpdateHandlerService(ILogger<UpdateHandlerService> logger, IReceivedCallbackQueryServices receivedCallbackQueryServices,
             IReceivedMessageService receivedMessageService, Redis redis)
         {
             _logger = logger;
-            _botclient = client;
-            _rms = receivedMessageService;
+            _receivedMessageService = receivedMessageService;
             _redis = redis;
+            _queryServices = receivedCallbackQueryServices;
         }
 
         public async Task HandleUpdateAsync(Update update, CancellationToken cancellationToken)
@@ -40,23 +41,15 @@ namespace Dunger.Application.Services.TelegramBotServices
 
         private async Task BotOnMessageReceived(Message message, CancellationToken cancellationToken)
         {
-            string? msg = message!.Text;
-            string? state = await _redis.GetUserState(message!.Chat.Id);
-            var command = msg switch
-            {
-                "/start" => _rms.SendStartCommand(_botclient, message, cancellationToken),
-                "/help" => _rms.SendHelpCommand(_botclient, message, cancellationToken),
-                "Contact" or "Aloqa" or "Контакт" => _rms.ReceivedContactButton(_botclient, message, cancellationToken),
-                "Biz haqimizda" or "About Us" or "О нас" => _rms.ReceivedInformationButton(_botclient, message, cancellationToken),
-                "Menyu" or "Menu" or "Меню" => _rms.ReceivedMenuButton(_botclient, message, cancellationToken),
-                "Buyurtmalarim" or "My Orders" or "Мои заказы" => _rms.ReceivedOrdersButton(_botclient, message, cancellationToken),
-                "Fikr bildirish" or "Feedback" or "Обратная связь" => _rms.ReceivedCommentsButton(_botclient, message, cancellationToken),
-                "Sozlamalar" or "Settings" or "Настройки" => _rms.ReceivedSettingsButton(_botclient, message, cancellationToken),
-                _ when  state != null => _rms.HasStateCommand(_botclient, state, message, cancellationToken),
-                _ => _rms.UnknownCommand(_botclient, message, cancellationToken),
-            };
+            string? state = await _redis.GetUserState(message.Chat.Id);
 
-            await command;
+            if(state == null)
+            {
+                await _receivedMessageService.CatchMessageWithoutState(message, cancellationToken);
+                return;
+            }
+            
+            await _receivedMessageService.CatchMessageWithState(message, state, cancellationToken);
 
             return;
         }
@@ -64,16 +57,16 @@ namespace Dunger.Application.Services.TelegramBotServices
         private async Task BotOnCallbackQueryReceived(CallbackQuery callbackQuery, CancellationToken cancellationToken)
         {
             _logger.LogInformation("Received inline keyboard callback from: {CallbackQueryId}", callbackQuery.Id);
+            
+            var state = await _redis.GetUserState(callbackQuery.From.Id);
 
-            await _botclient.AnswerCallbackQueryAsync(
-                callbackQueryId: callbackQuery.Id,
-                text: $"Received {callbackQuery.Data}",
-                cancellationToken: cancellationToken);
+            if(state == null)
+            {
+                await _queryServices.CatchCallbackQueryWithoutState(callbackQuery, cancellationToken);
+                return;
+            }
 
-            await _botclient.SendTextMessageAsync(
-                chatId: callbackQuery.Message!.Chat.Id,
-                text: $"Received {callbackQuery.Data}",
-                cancellationToken: cancellationToken);
+            await _queryServices.CatchCallbackQueryWithState(callbackQuery, state, cancellationToken);
 
             return;
         }

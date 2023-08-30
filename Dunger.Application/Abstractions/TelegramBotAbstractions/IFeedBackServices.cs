@@ -10,6 +10,6 @@ namespace Dunger.Application.Abstractions.TelegramBotAbstractions
 {
     public interface IFeedBackServices
     {
-        Task CreateFeedBack(ITelegramBotClient botclient, Message message, CancellationToken cancellationToken);
+        Task CreateFeedBack(Message message, CancellationToken cancellationToken);
     }
 }

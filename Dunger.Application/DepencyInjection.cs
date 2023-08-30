@@ -17,17 +17,18 @@ namespace Dunger.Application
             _services.AddScoped<IReceivedMessageService, ReceivedMessageService>();
             _services.AddScoped<ReplyKeyboards>();
             _services.AddSingleton<Redis>();
-            _services.AddScoped<ReplyKeyboards>();
+            _services.AddScoped<InlineKeyboards>();
             _services.AddScoped<IRegisterService, RegisterService>();
-            _services.AddScoped<RegisterState>();
             _services.AddScoped<ISendMessageService, SendMessageService>();
-            _services.AddScoped<IOrderServices, OrderServices>();
+            _services.AddScoped<IOrderButtonServices, OrderButtonServices>();
             _services.AddScoped<IFeedBackServices, FeedBackServices>();
+            _services.AddScoped<IInformationButtonServices, InformationButtonServices>();
+            _services.AddScoped<IReceivedCallbackQueryServices, ReceivedCallbackQueryServices>();
 
             _services.AddSingleton<IConnectionMultiplexer>(provider =>
             {
-                var configuration = ConfigurationOptions.Parse(_configuration.GetSection(Redis.Configuration).Value);
-                return ConnectionMultiplexer.Connect(configuration);
+                var config = ConfigurationOptions.Parse(_configuration.GetSection(Redis.Configuration).Value);
+                return ConnectionMultiplexer.Connect(config);
             });
 
             _services.AddSingleton<IDatabase>(provider =>
@@ -35,7 +36,9 @@ namespace Dunger.Application
                 var connectionMultiplexer = provider.GetRequiredService<IConnectionMultiplexer>();
                 return connectionMultiplexer.GetDatabase();
             });
+
             return _services;
         }
+
     }
 }

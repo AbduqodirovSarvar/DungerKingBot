@@ -30,12 +30,13 @@ namespace Dunger.Application.Services.TelegramBotServices
                 {
                     await _client.SendTextMessageAsync(chatId: Id, text: message);
                 }
-                catch(Exception ex)
+                catch(Exception)
                 {
-                    Console.WriteLine(ex.Message);
                     continue;
                 }
             }
+
+            return;
         }
     }
 }

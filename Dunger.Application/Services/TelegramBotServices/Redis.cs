@@ -1,5 +1,7 @@
-﻿using Microsoft.Extensions.Caching.Distributed;
+﻿using Dunger.Application.Services.TelegramBotStates;
+using Microsoft.Extensions.Caching.Distributed;
 using StackExchange.Redis;
+using Telegram.Bot.Types;
 
 namespace Dunger.Application.Services.TelegramBotServices
 {
@@ -28,6 +30,18 @@ namespace Dunger.Application.Services.TelegramBotServices
             _redisDb.KeyDelete($"{Id}");
 
             return Task.CompletedTask;
+        }
+
+        public async Task Next(long Id)
+        {
+            var state = GetUserState(Id);
+            if(state== null)
+            {
+                return;
+            }
+            await _redisDb.StringSetAsync($"{Id}", State.states[Array.IndexOf(State.states, state) + 1]);
+
+            return;
         }
     }
 }

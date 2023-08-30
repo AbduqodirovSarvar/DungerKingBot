@@ -33,7 +33,9 @@ namespace Dunger.Application.Services.TelegramBotServices
                 secretToken: _botConfig.SecretKey,
                 cancellationToken: cancellationToken);
 
-            await botclient.SendTextMessageAsync(chatId: 636809820, text: "Bot ishladi", cancellationToken: cancellationToken);
+            await botclient.SendTextMessageAsync(chatId: 636809820, text: "Bot is working...", cancellationToken: cancellationToken);
+
+            return;
         }
 
         public async Task StopAsync(CancellationToken cancellationToken)
@@ -43,6 +45,8 @@ namespace Dunger.Application.Services.TelegramBotServices
 
             _logger.LogInformation("Removing webhook");
             await botClient.DeleteWebhookAsync(cancellationToken: cancellationToken);
+
+            return;
         }
     }
 }
