@@ -29,6 +29,19 @@ namespace Dunger.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Vehicles",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Vehicles", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Filials",
                 columns: table => new
                 {
@@ -75,6 +88,33 @@ namespace Dunger.Infrastructure.Migrations
                         name: "FK_Users_Languages_LanguageId",
                         column: x => x.LanguageId,
                         principalTable: "Languages",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Delivers",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    FirstName = table.Column<string>(type: "text", nullable: false),
+                    LastName = table.Column<string>(type: "text", nullable: false),
+                    BirthDay = table.Column<DateOnly>(type: "date", nullable: false),
+                    Gender = table.Column<int>(type: "integer", nullable: false),
+                    Phone = table.Column<string>(type: "text", nullable: false),
+                    VehicleId = table.Column<int>(type: "integer", nullable: false),
+                    VehicleColor = table.Column<string>(type: "text", nullable: false),
+                    VehicleNumber = table.Column<string>(type: "text", nullable: false),
+                    JoinedTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Delivers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Delivers_Vehicles_VehicleId",
+                        column: x => x.VehicleId,
+                        principalTable: "Vehicles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -130,7 +170,7 @@ namespace Dunger.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Comments",
+                name: "Feedbacks",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
@@ -141,12 +181,34 @@ namespace Dunger.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Comments", x => x.Id);
+                    table.PrimaryKey("PK_Feedbacks", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Comments_Users_TelegramId",
+                        name: "FK_Feedbacks_Users_TelegramId",
                         column: x => x.TelegramId,
                         principalTable: "Users",
                         principalColumn: "TelegramId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "DeliverPhoto",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    DeliverId = table.Column<int>(type: "integer", nullable: false),
+                    PhotoPath = table.Column<string>(type: "text", nullable: false),
+                    Title = table.Column<string>(type: "text", nullable: false),
+                    CreatedTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DeliverPhoto", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_DeliverPhoto_Delivers_DeliverId",
+                        column: x => x.DeliverId,
+                        principalTable: "Delivers",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -167,11 +229,17 @@ namespace Dunger.Infrastructure.Migrations
                     TotalSumms = table.Column<decimal>(type: "numeric", nullable: false),
                     CreatedTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     ClosedTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    DeliveredTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                    DeliveredTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    DeliverId = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Orders", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Orders_Delivers_DeliverId",
+                        column: x => x.DeliverId,
+                        principalTable: "Delivers",
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Orders_Filials_FilialId",
                         column: x => x.FilialId,
@@ -266,9 +334,9 @@ namespace Dunger.Infrastructure.Migrations
                 columns: new[] { "Id", "CreatedTime", "Name" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2023, 8, 27, 2, 43, 22, 907, DateTimeKind.Utc).AddTicks(5040), "uz" },
-                    { 2, new DateTime(2023, 8, 27, 2, 43, 22, 907, DateTimeKind.Utc).AddTicks(5042), "en" },
-                    { 3, new DateTime(2023, 8, 27, 2, 43, 22, 907, DateTimeKind.Utc).AddTicks(5043), "ru" }
+                    { 1, new DateTime(2023, 8, 31, 15, 24, 40, 705, DateTimeKind.Utc).AddTicks(9010), "uz" },
+                    { 2, new DateTime(2023, 8, 31, 15, 24, 40, 705, DateTimeKind.Utc).AddTicks(9013), "en" },
+                    { 3, new DateTime(2023, 8, 31, 15, 24, 40, 705, DateTimeKind.Utc).AddTicks(9015), "ru" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -277,8 +345,30 @@ namespace Dunger.Infrastructure.Migrations
                 column: "UserTelegramId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Comments_TelegramId",
-                table: "Comments",
+                name: "IX_DeliverPhoto_DeliverId",
+                table: "DeliverPhoto",
+                column: "DeliverId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Delivers_Phone",
+                table: "Delivers",
+                column: "Phone",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Delivers_VehicleId",
+                table: "Delivers",
+                column: "VehicleId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Delivers_VehicleNumber",
+                table: "Delivers",
+                column: "VehicleNumber",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Feedbacks_TelegramId",
+                table: "Feedbacks",
                 column: "TelegramId");
 
             migrationBuilder.CreateIndex(
@@ -289,7 +379,8 @@ namespace Dunger.Infrastructure.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Filials_Name",
                 table: "Filials",
-                column: "Name");
+                column: "Name",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Languages_Name",
@@ -311,6 +402,11 @@ namespace Dunger.Infrastructure.Migrations
                 name: "IX_Menus_LanguageId",
                 table: "Menus",
                 column: "LanguageId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Orders_DeliverId",
+                table: "Orders",
+                column: "DeliverId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Orders_FilialId",
@@ -352,6 +448,12 @@ namespace Dunger.Infrastructure.Migrations
                 table: "Users",
                 column: "Phone",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Vehicles_Name",
+                table: "Vehicles",
+                column: "Name",
+                unique: true);
         }
 
         /// <inheritdoc />
@@ -361,7 +463,10 @@ namespace Dunger.Infrastructure.Migrations
                 name: "BlockedUsers");
 
             migrationBuilder.DropTable(
-                name: "Comments");
+                name: "DeliverPhoto");
+
+            migrationBuilder.DropTable(
+                name: "Feedbacks");
 
             migrationBuilder.DropTable(
                 name: "MenuPhotos");
@@ -379,10 +484,16 @@ namespace Dunger.Infrastructure.Migrations
                 name: "Orders");
 
             migrationBuilder.DropTable(
+                name: "Delivers");
+
+            migrationBuilder.DropTable(
                 name: "Filials");
 
             migrationBuilder.DropTable(
                 name: "Users");
+
+            migrationBuilder.DropTable(
+                name: "Vehicles");
 
             migrationBuilder.DropTable(
                 name: "Languages");

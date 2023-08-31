@@ -58,7 +58,7 @@ namespace Dunger.Application.Services.TelegramBotServices
 
                 if (user == null)
                 {
-                    Task st = state switch
+                    Task StateWHenUserNull = state switch
                     {
                         "language" => _registerService.SendLanguage(RegisterService.UserObject!, message, cancellationToken),
                         "firstName" => _registerService.SendFirstName(RegisterService.UserObject!, message, cancellationToken),
@@ -67,21 +67,19 @@ namespace Dunger.Application.Services.TelegramBotServices
                         _ => SendStartCommand(message, cancellationToken)
                     };
 
+                    await StateWHenUserNull;
+
                     return;
                 }
 
-                Task State = state switch
+                Task StateWhenUserNotNull = state switch
                 {
-                    /*"language" => _registerService.SendLanguage(RegisterService.UserObject!, message, cancellationToken),
-                    "firstName" => _registerService.SendFirstName(RegisterService.UserObject!, message, cancellationToken),
-                    "lastName" => _registerService.SendLastName(RegisterService.UserObject!, message, cancellationToken),
-                    "contact" => _registerService.SendContact(RegisterService.UserObject!, message, cancellationToken),*/
                     "feedback" => _feedBackServices.CreateFeedBack(message, cancellationToken),
                     "about" => _infoServices.CatchMessageFromAbout(message, user.LanguageId, cancellationToken),
                     _ => SendStartCommand(message, cancellationToken)
                 };
 
-                await State;
+                await StateWhenUserNotNull;
 
                 return;
             }
@@ -97,6 +95,26 @@ namespace Dunger.Application.Services.TelegramBotServices
         {
             try
             {
+                if (message.Text == "/start")
+                {
+                    await SendStartCommand(message, cancellationToken);
+                    return;
+                }
+
+                if (message.Text == "/help")
+                {
+                    await SendHelpCommand(message, cancellationToken);
+                    return;
+                }
+
+                Domain.Entities.User? user = await _context.Users.FirstOrDefaultAsync(x => x.TelegramId == message.Chat.Id, cancellationToken);
+
+                if (user == null)
+                {
+                    await SendStartCommand(message, cancellationToken);
+                    return;
+                }
+
                 Task msg = message.Text switch
                 {
                     "/start" => SendStartCommand(message, cancellationToken),
@@ -105,7 +123,7 @@ namespace Dunger.Application.Services.TelegramBotServices
                     "Biz haqimizda" or "About Us" or "О нас" => ReceivedInformationButton(message, cancellationToken),
                     "Menyu" or "Menu" or "Меню" => ReceivedMenuButton(message, cancellationToken),
                     "Buyurtmalarim" or "My Orders" or "Мои заказы" => ReceivedOrdersButton(message, cancellationToken),
-                    "Fikr bildirish" or "Feedback" or "Обратная связь" => ReceivedCommentsButton(message, cancellationToken),
+                    "Fikr bildirish" or "Feedback" or "Обратная связь" => ReceivedFeedbackButton(message, cancellationToken),
                     "Sozlamalar" or "Settings" or "Настройки" => ReceivedSettingsButton(message, cancellationToken),
                     _ => UnknownCommand(message, cancellationToken)
                 };
@@ -281,7 +299,7 @@ namespace Dunger.Application.Services.TelegramBotServices
             }
         }
 
-        private async Task ReceivedCommentsButton(Message message, CancellationToken cancellationToken)
+        private async Task ReceivedFeedbackButton(Message message, CancellationToken cancellationToken)
         {
             try
             {

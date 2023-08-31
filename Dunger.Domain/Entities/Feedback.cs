@@ -1,6 +1,6 @@
 ﻿namespace Dunger.Domain.Entities
 {
-    public class Comment
+    public class Feedback
     {
         public int Id { get; set; }
         public long TelegramId { get; set; }

@@ -8,7 +8,8 @@
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="12.0.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
+    <PackageReference Include="MediatR" Version="12.1.1" />
+    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.10" />
     <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="7.0.10" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
@@ -19,6 +20,14 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Dunger.Domain\Dunger.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Filters\" />
+    <Folder Include="UseCases\Menus\CommandHandlers\" />
+    <Folder Include="UseCases\Menus\QueryHandlers\" />
+    <Folder Include="UseCases\Menus\Queries\" />
+    <Folder Include="UseCases\Users\" />
   </ItemGroup>
 
 </Project>

@@ -27,20 +27,6 @@ namespace Dunger.Application.Services.TelegramBotServices
 
         public async Task CatchMessageFromAbout(Message message, int langauageId, CancellationToken cancellationToken = default)
         {
-            /*var user = await _context.Users.FirstOrDefaultAsync(x => x.TelegramId == message.Chat.Id, cancellationToken);
-
-            if (user == null)
-            {
-                await _client.SendTextMessageAsync(message.Chat.Id,
-                    $"{ReplyMessages.unAuthorized[0]}\n{ReplyMessages.unAuthorized[0]}\n{ReplyMessages.unAuthorized[0]}",
-                    cancellationToken: cancellationToken);
-
-                await _redis.DeleteState(message.Chat.Id);
-
-                await OrderButtonServices.FinishedindexofOrder();
-                return;
-            }*/
-
             var result = message.Text switch
             {
                 "Filiallar" or "Filials" or "Ветви" => AboutFilials(message, langauageId, cancellationToken),
@@ -55,7 +41,7 @@ namespace Dunger.Application.Services.TelegramBotServices
             return;
         }
 
-        public async Task BackButton(Message message, int langauageId, CancellationToken cancellationToken = default)
+        private async Task BackButton(Message message, int langauageId, CancellationToken cancellationToken = default)
         {
             await _client.SendTextMessageAsync(chatId: message.Chat.Id,
                 text: ReplyMessages.chooseCommand[langauageId],

@@ -28,7 +28,7 @@ namespace Dunger.Application.Services.TelegramBotServices
         public static Domain.Entities.User? UserObject { get; set; }
         public async Task CatchMessageFromRegister(Message message, CancellationToken cancellationToken = default)
         {
-            List<string> languages = await _context.Languages.Select(x => x.Name).ToListAsync(cancellationToken);
+            List<string>? languages = await _context.Languages.Select(x => x.Name).ToListAsync(cancellationToken);
             var state = await _redis.GetUserState(message.Chat.Id);
             await _client.SendTextMessageAsync(chatId: message.Chat.Id,
                     text: $"Tilni tanglang!\nChoose language!\nВыберите язык!",
@@ -116,17 +116,8 @@ namespace Dunger.Application.Services.TelegramBotServices
                     return;
                 }
 
-                Console.WriteLine($"CT: {cancellationToken}");
                 Language? language;
-                try
-                {
-                    language = await _context.Languages.FirstOrDefaultAsync(x => x.Name.ToLower() == message.Text!.ToLower(), cancellationToken);
-                }
-                catch (Exception)
-                {
-                    language = _context.Languages.FirstOrDefault(x => x.Name.ToLower() == message.Text!.ToLower());
-                }
-                
+                language = await _context.Languages.FirstOrDefaultAsync(x => x.Name == message.Text!, cancellationToken);
 
                 user.LanguageId = language?.Id ?? 1;
 

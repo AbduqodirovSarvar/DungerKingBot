@@ -39,13 +39,13 @@ namespace Dunger.Application.Services.TelegramBotServices
                 return;
             }
 
-            Comment feedback = new()
+            Feedback feedback = new()
             {
                 TelegramId = user.TelegramId,
                 Message = message.Text ?? "Empty"
             };
 
-            await _context.Comments.AddAsync(feedback, cancellationToken);
+            await _context.Feedbacks.AddAsync(feedback, cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);
 
             await _client.SendTextMessageAsync(chatId: message.Chat.Id,

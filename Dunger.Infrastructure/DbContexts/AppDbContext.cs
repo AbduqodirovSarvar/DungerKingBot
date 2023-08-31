@@ -11,6 +11,8 @@ namespace Dunger.Infrastructure.DbContexts
         public AppDbContext(DbContextOptions options) : base(options) { }
 
         public DbSet<User> Users { get; set; }
+        public DbSet<Deliver> Delivers { get; set; }
+        public DbSet<Vehicle> Vehicles { get; set; }
         public DbSet<Menu> Menus { get; set; }
         public DbSet<Payment> Payments { get; set; }
         public DbSet<Order> Orders { get; set; }
@@ -18,7 +20,7 @@ namespace Dunger.Infrastructure.DbContexts
         public DbSet<MenuPhoto> MenuPhotos { get; set; }
         public DbSet<Language> Languages { get; set; }
         public DbSet<Filial> Filials { get; set; }
-        public DbSet<Comment> Comments { get; set; }
+        public DbSet<Feedback> Feedbacks { get; set; }
         public DbSet<BlockedUser> BlockedUsers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -30,6 +32,11 @@ namespace Dunger.Infrastructure.DbContexts
             modelBuilder.ApplyConfiguration(new MenuTypaConfiguration());
             modelBuilder.ApplyConfiguration(new LanguageTypeConfiguration());
             modelBuilder.ApplyConfiguration(new FilialTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new VehicleTypeConfiguration());
+
+            modelBuilder.Entity<Deliver>().HasIndex(x => x.Phone).IsUnique();
+            modelBuilder.Entity<Deliver>().HasIndex(x => x.VehicleNumber).IsUnique();
+
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

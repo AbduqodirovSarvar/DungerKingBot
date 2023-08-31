@@ -13,7 +13,7 @@ namespace Dunger.Application.Services.TelegramBotServices
             _redisDb = redis;
         }
 
-        public static string Configuration = "RedisConnectionString";
+        public static readonly string Configuration = "RedisConnectionString";
         public async Task SetUserState(long chatId, string state)
         {
              await _redisDb.StringSetAsync($"{chatId}", state);
@@ -34,12 +34,16 @@ namespace Dunger.Application.Services.TelegramBotServices
 
         public async Task Next(long Id)
         {
-            var state = GetUserState(Id);
-            if(state== null)
+            string? state = await _redisDb.StringGetAsync($"{Id}");
+            if (state== null)
             {
                 return;
             }
             await _redisDb.StringSetAsync($"{Id}", State.states[Array.IndexOf(State.states, state) + 1]);
+
+            var a = await _redisDb.StringGetAsync($"{Id}");
+
+            Console.WriteLine("STATE:   _____________________" + a);
 
             return;
         }

@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Dunger.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230826214323_Initial")]
+    [Migration("20230831102440_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -52,7 +52,89 @@ namespace Dunger.Infrastructure.Migrations
                     b.ToTable("BlockedUsers");
                 });
 
-            modelBuilder.Entity("Dunger.Domain.Entities.Comment", b =>
+            modelBuilder.Entity("Dunger.Domain.Entities.Deliver", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateOnly>("BirthDay")
+                        .HasColumnType("date");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Gender")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("JoinedTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("VehicleColor")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("VehicleId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("VehicleNumber")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Phone")
+                        .IsUnique();
+
+                    b.HasIndex("VehicleId");
+
+                    b.HasIndex("VehicleNumber")
+                        .IsUnique();
+
+                    b.ToTable("Delivers");
+                });
+
+            modelBuilder.Entity("Dunger.Domain.Entities.DeliverPhoto", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("DeliverId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("PhotoPath")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DeliverId");
+
+                    b.ToTable("DeliverPhoto");
+                });
+
+            modelBuilder.Entity("Dunger.Domain.Entities.Feedback", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -74,7 +156,7 @@ namespace Dunger.Infrastructure.Migrations
 
                     b.HasIndex("TelegramId");
 
-                    b.ToTable("Comments");
+                    b.ToTable("Feedbacks");
                 });
 
             modelBuilder.Entity("Dunger.Domain.Entities.Filial", b =>
@@ -111,7 +193,8 @@ namespace Dunger.Infrastructure.Migrations
 
                     b.HasIndex("LanguageId");
 
-                    b.HasIndex("Name");
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("Filials");
                 });
@@ -142,19 +225,19 @@ namespace Dunger.Infrastructure.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedTime = new DateTime(2023, 8, 27, 2, 43, 22, 907, DateTimeKind.Utc).AddTicks(5040),
+                            CreatedTime = new DateTime(2023, 8, 31, 15, 24, 40, 705, DateTimeKind.Utc).AddTicks(9010),
                             Name = "uz"
                         },
                         new
                         {
                             Id = 2,
-                            CreatedTime = new DateTime(2023, 8, 27, 2, 43, 22, 907, DateTimeKind.Utc).AddTicks(5042),
+                            CreatedTime = new DateTime(2023, 8, 31, 15, 24, 40, 705, DateTimeKind.Utc).AddTicks(9013),
                             Name = "en"
                         },
                         new
                         {
                             Id = 3,
-                            CreatedTime = new DateTime(2023, 8, 27, 2, 43, 22, 907, DateTimeKind.Utc).AddTicks(5043),
+                            CreatedTime = new DateTime(2023, 8, 31, 15, 24, 40, 705, DateTimeKind.Utc).AddTicks(9015),
                             Name = "ru"
                         });
                 });
@@ -237,6 +320,9 @@ namespace Dunger.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedTime")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int?>("DeliverId")
+                        .HasColumnType("integer");
+
                     b.Property<DateTime?>("DeliveredTime")
                         .HasColumnType("timestamp with time zone");
 
@@ -265,6 +351,8 @@ namespace Dunger.Infrastructure.Migrations
                         .HasColumnType("numeric");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("DeliverId");
 
                     b.HasIndex("FilialId");
 
@@ -373,6 +461,26 @@ namespace Dunger.Infrastructure.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("Dunger.Domain.Entities.Vehicle", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("Vehicles");
+                });
+
             modelBuilder.Entity("Dunger.Domain.Entities.BlockedUser", b =>
                 {
                     b.HasOne("Dunger.Domain.Entities.User", "User")
@@ -382,7 +490,29 @@ namespace Dunger.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Dunger.Domain.Entities.Comment", b =>
+            modelBuilder.Entity("Dunger.Domain.Entities.Deliver", b =>
+                {
+                    b.HasOne("Dunger.Domain.Entities.Vehicle", "Vehicle")
+                        .WithMany("Delivers")
+                        .HasForeignKey("VehicleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Vehicle");
+                });
+
+            modelBuilder.Entity("Dunger.Domain.Entities.DeliverPhoto", b =>
+                {
+                    b.HasOne("Dunger.Domain.Entities.Deliver", "Deliver")
+                        .WithMany("Photos")
+                        .HasForeignKey("DeliverId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Deliver");
+                });
+
+            modelBuilder.Entity("Dunger.Domain.Entities.Feedback", b =>
                 {
                     b.HasOne("Dunger.Domain.Entities.User", "User")
                         .WithMany("Comments")
@@ -436,6 +566,10 @@ namespace Dunger.Infrastructure.Migrations
 
             modelBuilder.Entity("Dunger.Domain.Entities.Order", b =>
                 {
+                    b.HasOne("Dunger.Domain.Entities.Deliver", null)
+                        .WithMany("Orders")
+                        .HasForeignKey("DeliverId");
+
                     b.HasOne("Dunger.Domain.Entities.Filial", "Filial")
                         .WithMany("Orders")
                         .HasForeignKey("FilialId")
@@ -502,6 +636,13 @@ namespace Dunger.Infrastructure.Migrations
                     b.Navigation("Language");
                 });
 
+            modelBuilder.Entity("Dunger.Domain.Entities.Deliver", b =>
+                {
+                    b.Navigation("Orders");
+
+                    b.Navigation("Photos");
+                });
+
             modelBuilder.Entity("Dunger.Domain.Entities.Filial", b =>
                 {
                     b.Navigation("Menus");
@@ -526,6 +667,11 @@ namespace Dunger.Infrastructure.Migrations
                     b.Navigation("Comments");
 
                     b.Navigation("Orders");
+                });
+
+            modelBuilder.Entity("Dunger.Domain.Entities.Vehicle", b =>
+                {
+                    b.Navigation("Delivers");
                 });
 #pragma warning restore 612, 618
         }
