@@ -7,6 +7,7 @@ namespace Dunger.Application.Abstractions
     {
         public DbSet<User> Users { get; set; }
         public DbSet<Deliver> Delivers { get; set; }
+        public DbSet<DeliverPhoto> DeliverPhotos { get; set; }
         public DbSet<Vehicle> Vehicles { get; set; }
         public DbSet<Menu> Menus { get; set; }
         public DbSet<Payment> Payments { get; set; }
@@ -15,6 +16,7 @@ namespace Dunger.Application.Abstractions
         public DbSet<MenuPhoto> MenuPhotos { get; set; }
         public DbSet<Language> Languages { get; set; }
         public DbSet<Filial> Filials { get; set; }
+        public DbSet<FilialPhotos> FilialPhotos { get; set; }
         public DbSet<Feedback> Feedbacks { get; set; }
         public DbSet<BlockedUser> BlockedUsers { get; set; }
 

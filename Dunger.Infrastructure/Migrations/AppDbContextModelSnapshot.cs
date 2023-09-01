@@ -78,6 +78,9 @@ namespace Dunger.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int>("PhotoId")
+                        .HasColumnType("integer");
+
                     b.Property<string>("VehicleColor")
                         .IsRequired()
                         .HasColumnType("text");
@@ -92,6 +95,9 @@ namespace Dunger.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("Phone")
+                        .IsUnique();
+
+                    b.HasIndex("PhotoId")
                         .IsUnique();
 
                     b.HasIndex("VehicleId");
@@ -126,9 +132,7 @@ namespace Dunger.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DeliverId");
-
-                    b.ToTable("DeliverPhoto");
+                    b.ToTable("DeliverPhotos");
                 });
 
             modelBuilder.Entity("Dunger.Domain.Entities.Feedback", b =>
@@ -175,9 +179,6 @@ namespace Dunger.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("LanguageId")
-                        .HasColumnType("integer");
-
                     b.Property<string>("LocationUrl")
                         .IsRequired()
                         .HasColumnType("text");
@@ -188,12 +189,39 @@ namespace Dunger.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("LanguageId");
-
                     b.HasIndex("Name")
                         .IsUnique();
 
                     b.ToTable("Filials");
+                });
+
+            modelBuilder.Entity("Dunger.Domain.Entities.FilialPhotos", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("FilialId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Path")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FilialId");
+
+                    b.ToTable("FilialPhotos");
                 });
 
             modelBuilder.Entity("Dunger.Domain.Entities.Language", b =>
@@ -222,19 +250,19 @@ namespace Dunger.Infrastructure.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedTime = new DateTime(2023, 8, 31, 15, 24, 40, 705, DateTimeKind.Utc).AddTicks(9010),
+                            CreatedTime = new DateTime(2023, 9, 2, 2, 52, 48, 974, DateTimeKind.Utc).AddTicks(3259),
                             Name = "uz"
                         },
                         new
                         {
                             Id = 2,
-                            CreatedTime = new DateTime(2023, 8, 31, 15, 24, 40, 705, DateTimeKind.Utc).AddTicks(9013),
+                            CreatedTime = new DateTime(2023, 9, 2, 2, 52, 48, 974, DateTimeKind.Utc).AddTicks(3261),
                             Name = "en"
                         },
                         new
                         {
                             Id = 3,
-                            CreatedTime = new DateTime(2023, 8, 31, 15, 24, 40, 705, DateTimeKind.Utc).AddTicks(9015),
+                            CreatedTime = new DateTime(2023, 9, 2, 2, 52, 48, 974, DateTimeKind.Utc).AddTicks(3263),
                             Name = "ru"
                         });
                 });
@@ -251,15 +279,15 @@ namespace Dunger.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("FilialId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("LanguageId")
+                    b.Property<int?>("FilialId")
                         .HasColumnType("integer");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<int?>("PhotoId")
+                        .HasColumnType("integer");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("numeric");
@@ -268,7 +296,8 @@ namespace Dunger.Infrastructure.Migrations
 
                     b.HasIndex("FilialId");
 
-                    b.HasIndex("LanguageId");
+                    b.HasIndex("PhotoId")
+                        .IsUnique();
 
                     b.ToTable("Menus");
                 });
@@ -317,7 +346,7 @@ namespace Dunger.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedTime")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int?>("DeliverId")
+                    b.Property<int>("DeliverId")
                         .HasColumnType("integer");
 
                     b.Property<DateTime?>("DeliveredTime")
@@ -428,9 +457,6 @@ namespace Dunger.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("Id")
-                        .HasColumnType("integer");
-
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
@@ -489,24 +515,21 @@ namespace Dunger.Infrastructure.Migrations
 
             modelBuilder.Entity("Dunger.Domain.Entities.Deliver", b =>
                 {
+                    b.HasOne("Dunger.Domain.Entities.DeliverPhoto", "DeliverPhoto")
+                        .WithOne("Deliver")
+                        .HasForeignKey("Dunger.Domain.Entities.Deliver", "PhotoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Dunger.Domain.Entities.Vehicle", "Vehicle")
                         .WithMany("Delivers")
                         .HasForeignKey("VehicleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("DeliverPhoto");
+
                     b.Navigation("Vehicle");
-                });
-
-            modelBuilder.Entity("Dunger.Domain.Entities.DeliverPhoto", b =>
-                {
-                    b.HasOne("Dunger.Domain.Entities.Deliver", "Deliver")
-                        .WithMany("Photos")
-                        .HasForeignKey("DeliverId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Deliver");
                 });
 
             modelBuilder.Entity("Dunger.Domain.Entities.Feedback", b =>
@@ -520,40 +543,34 @@ namespace Dunger.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Dunger.Domain.Entities.Filial", b =>
-                {
-                    b.HasOne("Dunger.Domain.Entities.Language", "Language")
-                        .WithMany()
-                        .HasForeignKey("LanguageId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Language");
-                });
-
-            modelBuilder.Entity("Dunger.Domain.Entities.Menu", b =>
+            modelBuilder.Entity("Dunger.Domain.Entities.FilialPhotos", b =>
                 {
                     b.HasOne("Dunger.Domain.Entities.Filial", "Filial")
-                        .WithMany("Menus")
+                        .WithMany("Photos")
                         .HasForeignKey("FilialId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Dunger.Domain.Entities.Language", "Language")
-                        .WithMany()
-                        .HasForeignKey("LanguageId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Filial");
+                });
 
-                    b.Navigation("Language");
+            modelBuilder.Entity("Dunger.Domain.Entities.Menu", b =>
+                {
+                    b.HasOne("Dunger.Domain.Entities.Filial", null)
+                        .WithMany("Menus")
+                        .HasForeignKey("FilialId");
+
+                    b.HasOne("Dunger.Domain.Entities.MenuPhoto", "Photo")
+                        .WithOne()
+                        .HasForeignKey("Dunger.Domain.Entities.Menu", "PhotoId");
+
+                    b.Navigation("Photo");
                 });
 
             modelBuilder.Entity("Dunger.Domain.Entities.MenuPhoto", b =>
                 {
                     b.HasOne("Dunger.Domain.Entities.Menu", "Menu")
-                        .WithMany("Photos")
+                        .WithMany()
                         .HasForeignKey("MenuId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -563,9 +580,11 @@ namespace Dunger.Infrastructure.Migrations
 
             modelBuilder.Entity("Dunger.Domain.Entities.Order", b =>
                 {
-                    b.HasOne("Dunger.Domain.Entities.Deliver", null)
+                    b.HasOne("Dunger.Domain.Entities.Deliver", "Deliver")
                         .WithMany("Orders")
-                        .HasForeignKey("DeliverId");
+                        .HasForeignKey("DeliverId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Dunger.Domain.Entities.Filial", "Filial")
                         .WithMany("Orders")
@@ -584,6 +603,8 @@ namespace Dunger.Infrastructure.Migrations
                         .HasForeignKey("TelegramId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Deliver");
 
                     b.Navigation("Filial");
 
@@ -636,8 +657,11 @@ namespace Dunger.Infrastructure.Migrations
             modelBuilder.Entity("Dunger.Domain.Entities.Deliver", b =>
                 {
                     b.Navigation("Orders");
+                });
 
-                    b.Navigation("Photos");
+            modelBuilder.Entity("Dunger.Domain.Entities.DeliverPhoto", b =>
+                {
+                    b.Navigation("Deliver");
                 });
 
             modelBuilder.Entity("Dunger.Domain.Entities.Filial", b =>
@@ -645,10 +669,7 @@ namespace Dunger.Infrastructure.Migrations
                     b.Navigation("Menus");
 
                     b.Navigation("Orders");
-                });
 
-            modelBuilder.Entity("Dunger.Domain.Entities.Menu", b =>
-                {
                     b.Navigation("Photos");
                 });
 

@@ -8,8 +8,7 @@ namespace Dunger.Application.EntityTypeConfiguration
     {
         public void Configure(EntityTypeBuilder<Menu> builder)
         {
-            builder.HasMany(x => x.Photos).WithOne(x => x.Menu).HasForeignKey(x => x.MenuId);
-            builder.HasOne(x => x.Filial).WithMany(x => x.Menus).HasForeignKey(x => x.FilialId);
+            builder.HasOne(x => x.Photo).WithOne().HasForeignKey<Menu>(x => x.PhotoId);
         }
     }
 }

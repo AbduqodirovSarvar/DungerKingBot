@@ -13,6 +13,7 @@ namespace Dunger.Application.Models.ViewModels
         public Language? Language { get; set; }
         public ICollection<Order>? Orders { get; set; }
         public ICollection<Menu>? Menus { get; set; }
+        public ICollection<string> Photos { get; set; } = new HashSet<string>();
         public DateTime CreatedTime { get; set; }
     }
 }

@@ -44,11 +44,11 @@ namespace Dunger.Api.Controllers
             
             return Ok(await _mediator.Send(command));
         }
-    }
 
-    public class CreateMenu
-    {
-        public IFormFile Image { get; set; } = null!;
-        public CreateMenuCommand Command { get; set; } = null!;
+        [HttpPatch]
+        public async Task<IActionResult> Patch([FromForm] UpdateMenuCommand command, IFormFile image)
+        {
+            return Ok();
+        }
     }
 }

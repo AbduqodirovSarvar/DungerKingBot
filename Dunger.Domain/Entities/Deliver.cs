@@ -14,7 +14,8 @@ namespace Dunger.Domain.Entities
         public Vehicle? Vehicle { get; set; }
         public string VehicleColor { get; set; } = "unknown";
         public string VehicleNumber { get; set; } = string.Empty;
-        public ICollection<DeliverPhoto> Photos { get; set; } = new HashSet<DeliverPhoto>();
+        public int PhotoId { get; set; }
+        public DeliverPhoto? DeliverPhoto { get; set; }
         public ICollection<Order> Orders { get; set; } = new HashSet<Order>();
         public DateTime JoinedTime { get; set; } = DateTime.SpecifyKind(DateTimeOffset.UtcNow.ToOffset(TimeSpan.FromHours(5)).DateTime, DateTimeKind.Utc).ToUniversalTime();
     }

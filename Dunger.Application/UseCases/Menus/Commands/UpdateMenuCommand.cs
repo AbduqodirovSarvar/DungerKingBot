@@ -8,6 +8,7 @@ namespace Dunger.Application.UseCases.Menus.Commands
 {
     public class UpdateMenuCommand
     {
+        public int Id { get; set; }
         public string? Name { get; set; } = null;
         public string? PhotoPath { get; set; } = null;
         public string? Title { get; set; } = null;

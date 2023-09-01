@@ -11,6 +11,8 @@ namespace Dunger.Application.EntityTypeConfiguration
             builder.HasMany(x => x.Menus).WithOne(x => x.Order).HasForeignKey(x => x.OrderId);
             builder.HasOne(x => x.Filial).WithMany(x => x.Orders).HasForeignKey(x => x.FilialId);
             builder.HasMany(x => x.Payments).WithOne(x => x.Order).HasForeignKey(x => x.OrderId);
+            builder.HasOne(x => x.Deliver).WithMany(x => x.Orders).HasForeignKey(x => x.DeliverId);
+            builder.HasOne(x => x.Deliver).WithMany(x => x.Orders).HasForeignKey(x => x.DeliverId);
         }
     }
 }

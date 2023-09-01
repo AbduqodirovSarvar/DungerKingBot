@@ -2,12 +2,11 @@
 {
     public class User
     {
-        public int Id { get; set; }
+        public long TelegramId { get; set; }
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
         public string? UserName { get; set; }
         public string Phone { get; set; } = string.Empty;
-        public long TelegramId { get; set; }
         public int LanguageId { get; set; }
         public Language? Language { get; set; }
         public bool IsDeleted { get; set; } = false;

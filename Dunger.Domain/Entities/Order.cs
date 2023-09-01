@@ -9,6 +9,8 @@
         public bool IsDone { get; set; } = false;
         public string Address { get; set; } = string.Empty;
         public string? LocationUrl { get; set; }
+        public int DeliverId { get; set; }
+        public Deliver? Deliver { get; set; }
         public int LanguageId { get; set; }
         public Language? Language { get; set; }
         public int FilialId { get; set; }

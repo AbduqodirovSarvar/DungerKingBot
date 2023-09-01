@@ -10,6 +10,6 @@ namespace Dunger.Application.Models.ViewModels
         public decimal Price { get; set; }
         public int LanguageId { get; set; }
         public int FilialId { get; set; }
-        public ICollection<string> Photos { get; set; } = new HashSet<string>();
+        public string? Photo { get; set; }
     }
 }

@@ -12,7 +12,7 @@ namespace Dunger.Application.Mapper
         {
             CreateMap<CreateMenuCommand, Menu>().ReverseMap();
             CreateMap<Menu, MenuViewModel>()
-                .ForMember(x => x.Photos, y => y.MapFrom(z => z.Photos.Select(x => $"{x.Id}")));
+                .ForMember(x => x.Photo, y => y.MapFrom(z => $"{z.PhotoId}"));
             CreateMap<FilialCreateCommand, Filial>().ReverseMap();
             CreateMap<Filial, FilialViewModel>()
                 .ForMember(x => x.Menus, y => y.MapFrom(z => z.Menus))
