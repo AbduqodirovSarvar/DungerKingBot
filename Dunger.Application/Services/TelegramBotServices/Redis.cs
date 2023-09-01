@@ -1,7 +1,5 @@
 ﻿using Dunger.Application.Services.TelegramBotStates;
-using Microsoft.Extensions.Caching.Distributed;
 using StackExchange.Redis;
-using Telegram.Bot.Types;
 
 namespace Dunger.Application.Services.TelegramBotServices
 {
@@ -16,7 +14,7 @@ namespace Dunger.Application.Services.TelegramBotServices
         public static readonly string Configuration = "RedisConnectionString";
         public async Task SetUserState(long chatId, string state)
         {
-             await _redisDb.StringSetAsync($"{chatId}", state);
+            await _redisDb.StringSetAsync($"{chatId}", state);
         }
 
         public async Task<string?> GetUserState(long chatId)
@@ -35,7 +33,7 @@ namespace Dunger.Application.Services.TelegramBotServices
         public async Task Next(long Id)
         {
             string? state = await _redisDb.StringGetAsync($"{Id}");
-            if (state== null)
+            if (state == null)
             {
                 return;
             }

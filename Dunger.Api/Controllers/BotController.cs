@@ -16,7 +16,7 @@ namespace Dunger.Api.Controllers
                 await handleUpdateService.HandleUpdateAsync(update, cancellationToken);
                 return Ok();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }

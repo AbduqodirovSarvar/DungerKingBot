@@ -93,9 +93,9 @@ namespace Dunger.Application.Services.TelegramBotServices
                     new KeyboardButton[] { new KeyboardButton(ReplyMessages.shareContact[user.LanguageId])
                     { RequestContact = true } }
                 })
-                {
-                    ResizeKeyboard = true
-                };
+            {
+                ResizeKeyboard = true
+            };
 
             await _client.SendTextMessageAsync(chatId: message.Chat.Id,
                     text: ReplyMessages.askContact[user.LanguageId],

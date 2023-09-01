@@ -1,16 +1,7 @@
-﻿using Dunger.Application.Abstractions;
-using Dunger.Application.Abstractions.TelegramBotAbstractions;
+﻿using Dunger.Application.Abstractions.TelegramBotAbstractions;
 using Dunger.Application.Services.TelegramBotKeyboards;
 using Dunger.Application.Services.TelegramBotMessages;
-using Dunger.Domain.Entities;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Telegram.Bot;
-using Telegram.Bot.Types;
 
 namespace Dunger.Application.Services.TelegramBotServices
 {
@@ -50,11 +41,11 @@ namespace Dunger.Application.Services.TelegramBotServices
 
         public async Task GetPreviousOrders(long chatId, List<string> messages, int languageId, CancellationToken cancellationToken = default)
         {
-            if(_currentIndex < 5)
+            if (_currentIndex < 5)
             {
                 return;
             }
-            if(messages.Skip(_currentIndex).Take(5).ToList().Count < 5 || _currentIndex < 5)
+            if (messages.Skip(_currentIndex).Take(5).ToList().Count < 5 || _currentIndex < 5)
             {
                 _currentIndex -= messages.Skip(_currentIndex).Take(5).ToList().Count;
             }

@@ -3,11 +3,6 @@ using Dunger.Application.Abstractions.TelegramBotAbstractions;
 using Dunger.Application.Services.TelegramBotKeyboards;
 using Dunger.Application.Services.TelegramBotMessages;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
@@ -87,13 +82,13 @@ namespace Dunger.Application.Services.TelegramBotServices
                 return;
             }
             var filial = await _context.Filials.FirstOrDefaultAsync(x => x.Name.ToLower() == callbackQuery.Data!.ToLower(), cancellationToken);
-            
-            if(filial == null)
+
+            if (filial == null)
             {
                 await _redis.SetUserState(callbackQuery.From.Id, "about");
                 return;
             }
-            
+
             await _client.SendTextMessageAsync(chatId: callbackQuery.From.Id,
                 text: ReplyMessages.MakingAboutFilialText(filial, user.LanguageId),
                 cancellationToken: cancellationToken);

@@ -1,7 +1,6 @@
 ﻿using Dunger.Application.Abstractions.TelegramBotAbstractions;
 using Dunger.Application.Services.TelegramBotKeyboards;
 using Dunger.Application.Services.TelegramBotServices;
-using Dunger.Application.Services.TelegramBotStates;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using StackExchange.Redis;

@@ -2,14 +2,8 @@
 using Dunger.Application.Abstractions.TelegramBotAbstractions;
 using Dunger.Application.Services.TelegramBotKeyboards;
 using Dunger.Application.Services.TelegramBotMessages;
-using Dunger.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
@@ -69,7 +63,7 @@ namespace Dunger.Application.Services.TelegramBotServices
 
                 return;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogInformation("ERROR: {ex.Message}", ex.Message);
                 return;
@@ -106,7 +100,7 @@ namespace Dunger.Application.Services.TelegramBotServices
 
                 return;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogInformation("ERROR: {ex.Message}", ex.Message);
                 return;

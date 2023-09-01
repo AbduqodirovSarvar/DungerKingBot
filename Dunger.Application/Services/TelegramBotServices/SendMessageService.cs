@@ -1,11 +1,6 @@
 ﻿using Dunger.Application.Abstractions.TelegramBotAbstractions;
 using Dunger.Application.Models;
 using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Telegram.Bot;
 
 namespace Dunger.Application.Services.TelegramBotServices
@@ -30,7 +25,7 @@ namespace Dunger.Application.Services.TelegramBotServices
                 {
                     await _client.SendTextMessageAsync(chatId: Id, text: message);
                 }
-                catch(Exception)
+                catch (Exception)
                 {
                     continue;
                 }

@@ -1,10 +1,5 @@
-﻿using Dunger.Application.Abstractions;
-using Dunger.Application.Abstractions.TelegramBotAbstractions;
-using Dunger.Application.Services.TelegramBotMessages;
-using Dunger.Application.Services.TelegramBotStates;
-using Microsoft.EntityFrameworkCore;
+﻿using Dunger.Application.Abstractions.TelegramBotAbstractions;
 using Microsoft.Extensions.Logging;
-using Telegram.Bot;
 using Telegram.Bot.Types;
 
 namespace Dunger.Application.Services.TelegramBotServices
@@ -43,12 +38,12 @@ namespace Dunger.Application.Services.TelegramBotServices
         {
             string? state = await _redis.GetUserState(message.Chat.Id);
 
-            if(state == null)
+            if (state == null)
             {
                 await _receivedMessageService.CatchMessageWithoutState(message, cancellationToken);
                 return;
             }
-            
+
             await _receivedMessageService.CatchMessageWithState(message, state, cancellationToken);
 
             return;
@@ -57,10 +52,10 @@ namespace Dunger.Application.Services.TelegramBotServices
         private async Task BotOnCallbackQueryReceived(CallbackQuery callbackQuery, CancellationToken cancellationToken)
         {
             _logger.LogInformation("Received inline keyboard callback from: {CallbackQueryId}", callbackQuery.Id);
-            
+
             var state = await _redis.GetUserState(callbackQuery.From.Id);
 
-            if(state == null)
+            if (state == null)
             {
                 await _queryServices.CatchCallbackQueryWithoutState(callbackQuery, cancellationToken);
                 return;

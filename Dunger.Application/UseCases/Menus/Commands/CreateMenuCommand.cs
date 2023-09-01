@@ -1,11 +1,4 @@
-﻿using Dunger.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Dunger.Application.UseCases.Menus.Commands
+﻿namespace Dunger.Application.UseCases.Menus.Commands
 {
     public class CreateMenuCommand
     {

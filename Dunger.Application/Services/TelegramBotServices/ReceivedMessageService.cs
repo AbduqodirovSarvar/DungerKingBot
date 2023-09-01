@@ -3,15 +3,11 @@ using Dunger.Application.Abstractions;
 using Dunger.Application.Abstractions.TelegramBotAbstractions;
 using Dunger.Application.Services.TelegramBotKeyboards;
 using Dunger.Application.Services.TelegramBotMessages;
-using Dunger.Application.Services.TelegramBotStates;
-using Dunger.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System.Linq;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Dunger.Application.Services.TelegramBotServices
 {
@@ -40,7 +36,7 @@ namespace Dunger.Application.Services.TelegramBotServices
 
         public async Task CatchMessageWithState(Message message, string state, CancellationToken cancellationToken = default)
         {
-            try 
+            try
             {
                 if (message.Text == "/start")
                 {
@@ -132,7 +128,7 @@ namespace Dunger.Application.Services.TelegramBotServices
 
                 return;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogInformation("ERROR: {ex.Message}", ex.Message);
                 return;
@@ -149,7 +145,7 @@ namespace Dunger.Application.Services.TelegramBotServices
                     await _registerService.CatchMessageFromRegister(message, cancellationToken);
                     return;
                 }
-                
+
                 await OrderButtonServices.FinishedindexofOrder();
 
                 await _redis.DeleteState(user.TelegramId);
@@ -190,7 +186,7 @@ namespace Dunger.Application.Services.TelegramBotServices
 
                 return;
             }
-            catch(Exception ex) 
+            catch (Exception ex)
             {
                 _logger.LogInformation("ERROR: {ex.Message}", ex.Message);
                 return;
@@ -362,12 +358,12 @@ namespace Dunger.Application.Services.TelegramBotServices
 
                 return;
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 _logger.LogInformation("ERROR: {ex.Message}", ex.Message);
-                return; 
+                return;
             }
         }
-        
+
     }
 }

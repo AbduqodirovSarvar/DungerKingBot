@@ -1,11 +1,4 @@
-﻿using Dunger.Application.Abstractions;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Telegram.Bot.Types.ReplyMarkups;
+﻿using Telegram.Bot.Types.ReplyMarkups;
 
 namespace Dunger.Application.Services.TelegramBotKeyboards
 {
@@ -38,7 +31,7 @@ namespace Dunger.Application.Services.TelegramBotKeyboards
         {
             List<InlineKeyboardButton[]> buttonRows = new();
             List<InlineKeyboardButton> buttons = new();
-            if(names != null) 
+            if (names != null)
             {
                 foreach (var name in names)
                 {
@@ -58,9 +51,9 @@ namespace Dunger.Application.Services.TelegramBotKeyboards
 
                 return new InlineKeyboardMarkup(buttonRows.ToArray());
             }
-            else if(thename != null)
+            else if (thename != null)
             {
-                return new InlineKeyboardMarkup(new[] {InlineKeyboardButton.WithCallbackData(thename, thecallbackdata ?? thename)});
+                return new InlineKeyboardMarkup(new[] { InlineKeyboardButton.WithCallbackData(thename, thecallbackdata ?? thename) });
             }
 
             return new InlineKeyboardMarkup(Array.Empty<InlineKeyboardButton[]>());
