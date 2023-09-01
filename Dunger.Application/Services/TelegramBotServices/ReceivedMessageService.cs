@@ -264,8 +264,16 @@ namespace Dunger.Application.Services.TelegramBotServices
 
         private async Task ReceivedMenuButton(Message message, CancellationToken cancellationToken)
         {
-            Console.WriteLine("Menu button bosildi");
-            await _client.SendTextMessageAsync(message.Chat.Id, "Siz Menu tugmasini bosdingiz. Bu brauzer oynasida ochiladi!", cancellationToken: cancellationToken);
+            var chatId = message.Chat.Id;
+            await _client.SendTextMessageAsync(chatId, "Opening the website...");
+            await _client.SendChatActionAsync(chatId, Telegram.Bot.Types.Enums.ChatAction.Typing);
+
+            // Simulate delay before opening the website
+            await System.Threading.Tasks.Task.Delay(2000);
+
+            // Open the website link
+            await _client.SendTextMessageAsync(chatId, "Website: https://lms.tuit.uz/auth/login");
+            //await _client.SendTextMessageAsync(message.Chat.Id, "Siz Menu tugmasini bosdingiz. Bu brauzer oynasida ochiladi!", cancellationToken: cancellationToken);
             return;
         }
 

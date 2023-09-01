@@ -1,4 +1,5 @@
 ﻿using Dunger.Application.Abstractions;
+using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 
 namespace Dunger.Application.Services.TelegramBotKeyboards
@@ -16,6 +17,9 @@ namespace Dunger.Application.Services.TelegramBotKeyboards
         public static readonly ReplyKeyboardMarkup[] AboutPageKeyboards = new[] { MakingKeyboard(aboutUz.ToList()), MakingKeyboard(aboutEn.ToList()), MakingKeyboard(aboutRu.ToList()) };
         public static readonly ReplyKeyboardMarkup[] BackKeyboards = new[] { MakingKeyboard(null, back[0]), MakingKeyboard(null, back[1]), MakingKeyboard(null, back[2]) };
 
+        //private static WebAppInfo MenuPageWebApp = new(){ Url = "https://lms.tuit.uz/auth/login" };
+        //private static readonly WebAppInfo SettingsPageWebApp = new() { Url = "https://lms.tuit.uz/auth/login" };
+
         public static ReplyKeyboardMarkup MakingKeyboard(List<string>? names = null, string? thename = null, int? rows = 2)
         {
             List<KeyboardButton[]> buttonRows = new();
@@ -24,6 +28,18 @@ namespace Dunger.Application.Services.TelegramBotKeyboards
             {
                 foreach (var name in names)
                 {
+                    if(name == "Menyu"|| name == "Menu" || name == "Меню")
+                    {
+                        buttons.Add( new KeyboardButton(name.ToString()) { WebApp = new WebAppInfo() { Url = "https://lms.tuit.uz/auth/login" } });
+
+                        if (buttons.Count == rows)
+                        {
+                            buttonRows.Add(buttons.ToArray());
+                            buttons.Clear();
+                        }
+                        continue;
+                    }
+
                     if (buttons.Count == rows)
                     {
                         buttonRows.Add(buttons.ToArray());
@@ -46,6 +62,17 @@ namespace Dunger.Application.Services.TelegramBotKeyboards
             }
 
             return new ReplyKeyboardMarkup(Array.Empty<KeyboardButton[]>());
+        }
+
+
+        private static KeyboardButton MakingReplyButtonForWebApp(string name, WebAppInfo webapp)
+        {
+            KeyboardButton replyKeyboard = new(name.ToString())
+            {
+                WebApp = webapp,
+            };
+
+            return replyKeyboard;
         }
     }
 }
