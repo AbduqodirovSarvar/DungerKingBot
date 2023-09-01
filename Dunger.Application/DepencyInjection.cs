@@ -1,9 +1,10 @@
-﻿using Dunger.Application.Abstractions.TelegramBotAbstractions;
+﻿using AutoMapper;
+using Dunger.Application.Abstractions.TelegramBotAbstractions;
+using Dunger.Application.Mapper;
 using Dunger.Application.Services.TelegramBotKeyboards;
 using Dunger.Application.Services.TelegramBotServices;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using StackExchange.Redis;
 
 namespace Dunger.Application
 {
@@ -11,11 +12,14 @@ namespace Dunger.Application
     {
         public static IServiceCollection BotServices(this IServiceCollection _services, IConfiguration _configuration)
         {
+            _services.AddMediatR(cfg =>
+            {
+                cfg.RegisterServicesFromAssembly(typeof(DepencyInjection).Assembly);
+            });
             _services.AddHostedService<ConfigureWebHook>();
             _services.AddScoped<UpdateHandlerService>();
             _services.AddScoped<IReceivedMessageService, ReceivedMessageService>();
             _services.AddScoped<ReplyKeyboards>();
-            //_services.AddScoped<Redis>();
             _services.AddScoped<InlineKeyboards>();
             _services.AddScoped<IRegisterService, RegisterService>();
             _services.AddScoped<ISendMessageService, SendMessageService>();
@@ -23,6 +27,14 @@ namespace Dunger.Application
             _services.AddScoped<IFeedBackServices, FeedBackServices>();
             _services.AddScoped<IInformationButtonServices, InformationButtonServices>();
             _services.AddScoped<IReceivedCallbackQueryServices, ReceivedCallbackQueryServices>();
+
+            var mappingconfig = new MapperConfiguration(x =>
+            {
+                x.AddProfile(new Mapping());
+            });
+
+            IMapper mapper = mappingconfig.CreateMapper();
+            _services.AddSingleton(mapper);
 
             /*_services.AddScoped<IConnectionMultiplexer>(provider =>
             {

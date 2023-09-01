@@ -24,9 +24,7 @@
 
   <ItemGroup>
     <Folder Include="Filters\" />
-    <Folder Include="UseCases\Menus\CommandHandlers\" />
     <Folder Include="UseCases\Menus\QueryHandlers\" />
-    <Folder Include="UseCases\Menus\Queries\" />
     <Folder Include="UseCases\Users\" />
   </ItemGroup>
 
