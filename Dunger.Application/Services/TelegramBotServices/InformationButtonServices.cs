@@ -12,12 +12,10 @@ namespace Dunger.Application.Services.TelegramBotServices
     {
         private readonly ITelegramBotClient _client;
         private readonly IAppDbContext _context;
-        private readonly Redis _redis;
-        public InformationButtonServices(ITelegramBotClient client, IAppDbContext context, Redis redis)
+        public InformationButtonServices(ITelegramBotClient client, IAppDbContext context)
         {
             _client = client;
             _context = context;
-            _redis = redis;
         }
 
         public async Task CatchMessageFromAbout(Message message, int langauageId, CancellationToken cancellationToken = default)
@@ -43,7 +41,7 @@ namespace Dunger.Application.Services.TelegramBotServices
                 replyMarkup: ReplyKeyboards.MainPageKeyboards[langauageId - 1],
                 cancellationToken: cancellationToken);
 
-            await _redis.DeleteState(message.Chat.Id);
+            await Redis.DeleteState(message.Chat.Id);
 
             return;
         }
@@ -57,7 +55,7 @@ namespace Dunger.Application.Services.TelegramBotServices
                 replyMarkup: InlineKeyboards.MakingInlineKeyboard(filials),
                 cancellationToken: cancellationToken);
 
-            await _redis.SetUserState(message.Chat.Id, "about");
+            await Redis.SetUserState(message.Chat.Id, "about");
 
             return;
         }
@@ -69,7 +67,7 @@ namespace Dunger.Application.Services.TelegramBotServices
                 replyMarkup: ReplyKeyboards.AboutPageKeyboards[langauageId - 1],
                 cancellationToken: cancellationToken);
 
-            await _redis.SetUserState(message.Chat.Id, "about");
+            await Redis.SetUserState(message.Chat.Id, "about");
 
             return;
         }
@@ -85,7 +83,7 @@ namespace Dunger.Application.Services.TelegramBotServices
 
             if (filial == null)
             {
-                await _redis.SetUserState(callbackQuery.From.Id, "about");
+                await Redis.SetUserState(callbackQuery.From.Id, "about");
                 return;
             }
 
@@ -93,7 +91,7 @@ namespace Dunger.Application.Services.TelegramBotServices
                 text: ReplyMessages.MakingAboutFilialText(filial, user.LanguageId),
                 cancellationToken: cancellationToken);
 
-            await _redis.SetUserState(callbackQuery.From.Id, "about");
+            await Redis.SetUserState(callbackQuery.From.Id, "about");
             return;
         }
 
@@ -104,7 +102,7 @@ namespace Dunger.Application.Services.TelegramBotServices
                 replyMarkup: ReplyKeyboards.AboutPageKeyboards[langauageId - 1],
                 cancellationToken: cancellationToken);
 
-            await _redis.SetUserState(message.Chat.Id, "about");
+            await Redis.SetUserState(message.Chat.Id, "about");
 
             return;
         }

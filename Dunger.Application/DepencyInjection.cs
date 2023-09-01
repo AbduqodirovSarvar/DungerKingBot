@@ -15,7 +15,7 @@ namespace Dunger.Application
             _services.AddScoped<UpdateHandlerService>();
             _services.AddScoped<IReceivedMessageService, ReceivedMessageService>();
             _services.AddScoped<ReplyKeyboards>();
-            _services.AddScoped<Redis>();
+            //_services.AddScoped<Redis>();
             _services.AddScoped<InlineKeyboards>();
             _services.AddScoped<IRegisterService, RegisterService>();
             _services.AddScoped<ISendMessageService, SendMessageService>();
@@ -24,7 +24,7 @@ namespace Dunger.Application
             _services.AddScoped<IInformationButtonServices, InformationButtonServices>();
             _services.AddScoped<IReceivedCallbackQueryServices, ReceivedCallbackQueryServices>();
 
-            _services.AddScoped<IConnectionMultiplexer>(provider =>
+            /*_services.AddScoped<IConnectionMultiplexer>(provider =>
             {
                 var config = ConfigurationOptions.Parse(_configuration.GetSection(Redis.Configuration).Value);
                 return ConnectionMultiplexer.Connect(config);
@@ -34,7 +34,7 @@ namespace Dunger.Application
             {
                 var connectionMultiplexer = provider.GetRequiredService<IConnectionMultiplexer>();
                 return connectionMultiplexer.GetDatabase();
-            });
+            });*/
 
             return _services;
         }

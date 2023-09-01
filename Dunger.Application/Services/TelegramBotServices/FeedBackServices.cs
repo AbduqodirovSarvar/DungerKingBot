@@ -13,13 +13,11 @@ namespace Dunger.Application.Services.TelegramBotServices
     {
         private readonly IAppDbContext _context;
         private readonly ISendMessageService _sendMsgService;
-        private readonly Redis _redis;
         private readonly ITelegramBotClient _client;
-        public FeedBackServices(IAppDbContext context, ISendMessageService sendMessageService, Redis redis, ITelegramBotClient client)
+        public FeedBackServices(IAppDbContext context, ISendMessageService sendMessageService, ITelegramBotClient client)
         {
             _context = context;
             _sendMsgService = sendMessageService;
-            _redis = redis;
             _client = client;
         }
 
@@ -50,7 +48,7 @@ namespace Dunger.Application.Services.TelegramBotServices
 
             await _sendMsgService.SendMessageToAdmins($"TelegramId: {feedback.TelegramId}\nFeedback: {feedback.Message}\n\n____{feedback.CreatedTime.ToString("dd-MM-yyyy HH:mm")}____");
 
-            await _redis.DeleteState(feedback.TelegramId);
+            await Redis.DeleteState(feedback.TelegramId);
 
             return;
         }

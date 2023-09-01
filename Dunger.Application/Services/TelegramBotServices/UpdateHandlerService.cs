@@ -8,14 +8,12 @@ namespace Dunger.Application.Services.TelegramBotServices
     {
         private readonly ILogger<UpdateHandlerService> _logger;
         private readonly IReceivedMessageService _receivedMessageService;
-        private readonly Redis _redis;
         private readonly IReceivedCallbackQueryServices _queryServices;
         public UpdateHandlerService(ILogger<UpdateHandlerService> logger, IReceivedCallbackQueryServices receivedCallbackQueryServices,
-            IReceivedMessageService receivedMessageService, Redis redis)
+            IReceivedMessageService receivedMessageService)
         {
             _logger = logger;
             _receivedMessageService = receivedMessageService;
-            _redis = redis;
             _queryServices = receivedCallbackQueryServices;
         }
 
@@ -36,7 +34,7 @@ namespace Dunger.Application.Services.TelegramBotServices
 
         private async Task BotOnMessageReceived(Message message, CancellationToken cancellationToken)
         {
-            string? state = await _redis.GetUserState(message.Chat.Id);
+            string? state = Redis.GetUserState(message.Chat.Id);
 
             if (state == null)
             {
@@ -53,7 +51,7 @@ namespace Dunger.Application.Services.TelegramBotServices
         {
             _logger.LogInformation("Received inline keyboard callback from: {CallbackQueryId}", callbackQuery.Id);
 
-            var state = await _redis.GetUserState(callbackQuery.From.Id);
+            var state = Redis.GetUserState(callbackQuery.From.Id);
 
             if (state == null)
             {

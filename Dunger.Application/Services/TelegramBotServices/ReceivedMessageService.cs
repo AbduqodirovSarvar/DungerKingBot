@@ -15,18 +15,16 @@ namespace Dunger.Application.Services.TelegramBotServices
     {
         private readonly IAppDbContext _context;
         private readonly IRegisterService _registerService;
-        private readonly Redis _redis;
         private readonly IOrderButtonServices _orderServices;
         private readonly IFeedBackServices _feedBackServices;
         private readonly ITelegramBotClient _client;
         private readonly IInformationButtonServices _infoServices;
         private readonly ILogger<ReceivedMessageService> _logger;
         public ReceivedMessageService(IAppDbContext context, IRegisterService registerService, IInformationButtonServices informationButtonServices,
-            Redis redis, IOrderButtonServices orderServices, IFeedBackServices feedBackServices, ITelegramBotClient client, ILogger<ReceivedMessageService> logger)
+            IOrderButtonServices orderServices, IFeedBackServices feedBackServices, ITelegramBotClient client, ILogger<ReceivedMessageService> logger)
         {
             _context = context;
             _registerService = registerService;
-            _redis = redis;
             _orderServices = orderServices;
             _feedBackServices = feedBackServices;
             _client = client;
@@ -148,7 +146,7 @@ namespace Dunger.Application.Services.TelegramBotServices
 
                 await OrderButtonServices.FinishedindexofOrder();
 
-                await _redis.DeleteState(user.TelegramId);
+                await Redis.DeleteState(user.TelegramId);
 
                 await _client.SendTextMessageAsync(chatId: message.Chat.Id,
                     text: ReplyMessages.chooseCommand[user.LanguageId],
@@ -180,7 +178,7 @@ namespace Dunger.Application.Services.TelegramBotServices
                     text: msg,
                     cancellationToken: cancellationToken);
 
-                await _redis.DeleteState(message.Chat.Id);
+                await Redis.DeleteState(message.Chat.Id);
 
                 await OrderButtonServices.FinishedindexofOrder();
 
@@ -237,7 +235,7 @@ namespace Dunger.Application.Services.TelegramBotServices
                         $"{ReplyMessages.unAuthorized[0]}\n{ReplyMessages.unAuthorized[0]}\n{ReplyMessages.unAuthorized[0]}",
                         cancellationToken: cancellationToken);
 
-                    await _redis.DeleteState(message.Chat.Id);
+                    await Redis.DeleteState(message.Chat.Id);
 
                     return;
                 }
@@ -247,7 +245,7 @@ namespace Dunger.Application.Services.TelegramBotServices
                     replyMarkup: ReplyKeyboards.AboutPageKeyboards[user.LanguageId - 1],
                     cancellationToken: cancellationToken);
 
-                await _redis.SetUserState(user.TelegramId, "about");
+                await Redis.SetUserState(user.TelegramId, "about");
 
                 return;
             }
@@ -323,7 +321,7 @@ namespace Dunger.Application.Services.TelegramBotServices
                     replyMarkup: new ReplyKeyboardRemove(),
                     cancellationToken: cancellationToken);
 
-                await _redis.SetUserState(message.Chat.Id, "feedback");
+                await Redis.SetUserState(message.Chat.Id, "feedback");
                 return;
             }
             catch (Exception ex)

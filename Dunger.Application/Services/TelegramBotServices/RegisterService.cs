@@ -14,28 +14,28 @@ namespace Dunger.Application.Services.TelegramBotServices
 {
     public class RegisterService : IRegisterService
     {
-        private readonly Redis _redis;
         private readonly IAppDbContext _context;
         private readonly ITelegramBotClient _client;
         private readonly ILogger<RegisterService> _logger;
-        public RegisterService(Redis redis, IAppDbContext context, ITelegramBotClient client, ILogger<RegisterService> logger)
+        private readonly ISendMessageService _sendMessageService;
+        public RegisterService(IAppDbContext context, ITelegramBotClient client, ILogger<RegisterService> logger, ISendMessageService sendMessageService)
         {
-            _redis = redis;
             _context = context;
             _client = client;
             _logger = logger;
+            _sendMessageService = sendMessageService;
         }
         public static Domain.Entities.User? UserObject { get; set; }
         public async Task CatchMessageFromRegister(Message message, CancellationToken cancellationToken = default)
         {
             List<string>? languages = await _context.Languages.Select(x => x.Name).ToListAsync(cancellationToken);
-            var state = await _redis.GetUserState(message.Chat.Id);
+            var state = Redis.GetUserState(message.Chat.Id);
             await _client.SendTextMessageAsync(chatId: message.Chat.Id,
                     text: $"Tilni tanglang!\nChoose language!\nВыберите язык!",
                     replyMarkup: ReplyKeyboards.MakingKeyboard(languages),
                     cancellationToken: cancellationToken);
 
-            await _redis.SetUserState(message.Chat.Id, State.states[0]);// "language" state
+            await Redis.SetUserState(message.Chat.Id, State.states[0]);// "language" state
 
             UserObject = new Domain.Entities.User
             {
@@ -60,10 +60,12 @@ namespace Dunger.Application.Services.TelegramBotServices
                     replyMarkup: ReplyKeyboards.MainPageKeyboards[user.LanguageId - 1],
                     cancellationToken: cancellationToken);
 
-            await _redis.DeleteState(message.Chat.Id);
+            await Redis.DeleteState(message.Chat.Id);
 
             await _context.Users.AddAsync(user, cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);
+
+            await _sendMessageService.SendMessageToAdmins($"New User:\nName: {user.FirstName} {user.LastName}\nTelegramId: {user.TelegramId}\nCreatedTime: {user.CreatedTate.ToString("dd-mm-yyyy  hh-mm")}");
 
             UserObject = null;
 
@@ -78,7 +80,7 @@ namespace Dunger.Application.Services.TelegramBotServices
                     text: ReplyMessages.askLastName[user.LanguageId],
                     cancellationToken: cancellationToken);
 
-            await _redis.Next(message.Chat.Id);
+            await Redis.Next(message.Chat.Id);
 
             return;
         }
@@ -102,7 +104,7 @@ namespace Dunger.Application.Services.TelegramBotServices
                     replyMarkup: replyKeyboard,
                     cancellationToken: cancellationToken);
 
-            await _redis.Next(message.Chat.Id);
+            await Redis.Next(message.Chat.Id);
 
             return;
         }
@@ -126,7 +128,7 @@ namespace Dunger.Application.Services.TelegramBotServices
                     replyMarkup: new ReplyKeyboardRemove(),
                     cancellationToken: cancellationToken);
 
-                await _redis.Next(message.Chat.Id);
+                await Redis.Next(message.Chat.Id);
 
                 return;
             }
