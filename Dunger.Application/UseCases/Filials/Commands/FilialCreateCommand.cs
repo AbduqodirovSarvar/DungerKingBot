@@ -15,6 +15,5 @@ namespace Dunger.Application.UseCases.Filials.Commands
         public string Description { get; set; } = string.Empty;
         public string Address { get; set; } = string.Empty;
         public string LocationUrl { get; set; } = string.Empty;
-        public int LanguageId { get; set; }
     }
 }

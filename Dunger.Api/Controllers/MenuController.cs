@@ -1,4 +1,6 @@
 ﻿using Dunger.Application.UseCases.Menus.Commands;
+using Dunger.Application.UseCases.Menus.Queries;
+using Dunger.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -48,7 +50,45 @@ namespace Dunger.Api.Controllers
         [HttpPatch]
         public async Task<IActionResult> Patch([FromForm] UpdateMenuCommand command, IFormFile image)
         {
-            return Ok();
+            if(image is not null)
+            {
+                string webRootPath = _env.WebRootPath;
+                string fileName = Guid.NewGuid().ToString() + Path.GetExtension(image.FileName);
+                string filePath = Path.Combine(webRootPath, "Images", fileName);
+
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    await image.CopyToAsync(fileStream);
+                }
+
+                CreateMenuPhotoCommand menuphotocommand = new() { MenuId = command.Id, Title = fileName, PhotoPath = filePath };
+
+                await _mediator.Send(menuphotocommand);
+
+
+            }
+
+
+            return Ok(await _mediator.Send(command));
+        }
+
+        [HttpDelete("{Id}")]
+        public async Task<IActionResult> Delete(int Id)
+        {
+            return Ok(await _mediator.Send(new DeleteMenuCommand(Id)));
+        }
+
+        [HttpGet]
+        [Route("{Id}")]
+        public async Task<IActionResult> Get(int Id)
+        {
+            return Ok(await _mediator.Send(new GetMenuQuery(Id)));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            return Ok(await _mediator.Send(new GetAllMenuQuery()));
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using Dunger.Application.Services.TelegramBotServices;
+﻿using Dunger.Application.Services.TelegramServices.TelegramBotServices;
 using Microsoft.AspNetCore.Mvc;
 using Telegram.Bot.Types;
 

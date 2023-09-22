@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using Dunger.Application.Abstractions.TelegramBotAbstractions;
 using Dunger.Application.Mapper;
-using Dunger.Application.Services.TelegramBotKeyboards;
-using Dunger.Application.Services.TelegramBotServices;
+using Dunger.Application.Services.TelegramServices.TelegramBotKeyboards;
+using Dunger.Application.Services.TelegramServices.TelegramBotServices;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -10,7 +10,7 @@ namespace Dunger.Application
 {
     public static class DepencyInjection
     {
-        public static IServiceCollection BotServices(this IServiceCollection _services, IConfiguration _configuration)
+        public static IServiceCollection BotServices(this IServiceCollection _services)
         {
             _services.AddMediatR(cfg =>
             {

@@ -24,8 +24,13 @@
 
   <ItemGroup>
     <Folder Include="Filters\" />
-    <Folder Include="UseCases\Menus\QueryHandlers\" />
-    <Folder Include="UseCases\Users\" />
+    <Folder Include="UseCases\Languages\" />
+    <Folder Include="UseCases\Delivers\" />
+    <Folder Include="UseCases\Orders\Commands\" />
+    <Folder Include="UseCases\Orders\CommandHandlers\" />
+    <Folder Include="UseCases\Orders\QueryHandlers\" />
+    <Folder Include="UseCases\Orders\Queries\" />
+    <Folder Include="UseCases\Payments\" />
   </ItemGroup>
 
 </Project>

@@ -29,7 +29,7 @@ namespace Dunger.Application.UseCases.Filials.CommandHandlers
             var filial = await _context.Filials.FirstOrDefaultAsync(x => x.Name == request.Name, cancellationToken);
             if (filial != null)
             {
-                throw new Exception();
+                throw new Exception("Already exists");
             }
 
             filial = _mapper.Map<Filial>(request);

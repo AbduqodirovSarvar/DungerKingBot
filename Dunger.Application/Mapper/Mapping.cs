@@ -2,6 +2,7 @@
 using Dunger.Application.Models.ViewModels;
 using Dunger.Application.UseCases.Filials.Commands;
 using Dunger.Application.UseCases.Menus.Commands;
+using Dunger.Application.UseCases.Vehicles.Commands;
 using Dunger.Domain.Entities;
 
 namespace Dunger.Application.Mapper
@@ -17,6 +18,8 @@ namespace Dunger.Application.Mapper
             CreateMap<Filial, FilialViewModel>()
                 .ForMember(x => x.Menus, y => y.MapFrom(z => z.Menus))
                 .ForMember(x => x.Orders, y => y.MapFrom(z => z.Orders));
+
+            CreateMap<CreateVehiclesCommand, Vehicle>().ReverseMap();
 
         }
     }
